@@ -25,3 +25,5 @@ poetry.lock
 .idea
 venv
 .env
+
+ui_log.txt
