@@ -23,6 +23,7 @@ from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
 from android_world.utils.ui_elem_description_generator import UI_Elem_Description_Generator
+from android_world.agents.action_execution_prompts import ACTION_KEY_TO_PROMPT, ACTION_EXECUTION_PROMPT_TEMPLATE
 
 PROMPT_PREFIX = (
     'You are an agent who can operate an Android phone on behalf of a user.'
@@ -102,143 +103,6 @@ PROMPT_PREFIX_NO_FORMAT = (
     '- Scroll the screen or a scrollable UI element: action_type: scroll\n'
     '- Open an app: action_type: open_app\n'
     '- Wait for the screen to update: action_type: wait\n'
-)
-
-PROMPT_CLICK_JSON = (
-    'You have selected the `click` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "click", "index": <target_index>}\n'
-    'Guidelines:\n'
-    '- The index must correspond to a visible and interactable UI element on the screen.\n'
-    '- The agent should simulate a real tap: the click will be performed at the center of the element\'s bounding box.\n'
-    '- Do not click on elements that are disabled, hidden, or overlapped by other UI elements.\n'
-    '- Do not click on decorative or non-interactive elements (such as icons or separators).\n'
-    '- If multiple elements have similar text, use the index that matches the intended target in the UI list.\n'
-    '- Only include the "index" key, do not add extra fields.\n'
-    'Common mistakes:\n'
-    '- Using an index that is not present in the current UI element list.\n'
-    '- Using an index for an element that is not visible or interactable (e.g., off-screen, covered, or grayed out).\n'
-    '- Clicking on a label or static text instead of a button or input field.\n'
-    '- Adding unnecessary keys or fields to the JSON.\n'
-    '- Failing to update the index if the UI changes after a previous action.\n'
-    'Example: {"action_type": "click", "index": 2}'
-)
-
-PROMPT_LONG_PRESS_JSON = (
-    'You have selected the `long_press` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "long_press", "index": <target_index>}\n'
-    'Guidelines:\n'
-    '- The index must correspond to a visible UI element.\n'
-    '- Only include the "index" key.\n'
-    'Common mistakes:\n'
-    '- Using an invalid index.\n'
-    '- Adding extra fields.\n'
-    'Example: {"action_type": "long_press", "index": 1}'
-)
-
-PROMPT_INPUT_TEXT_JSON = (
-    'You have selected the `input_text` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "input_text", "text": <text_input>, "index": <target_index>}\n'
-    'Guidelines:\n'
-    '- "text" is the string to type.\n'
-    '- "index" is the index of the editable field.\n'
-    '- Do not include extra keys.\n'
-    'Common mistakes:\n'
-    '- Forgetting to include both "text" and "index".\n'
-    '- Using an index that is not visible.\n'
-    'Example: {"action_type": "input_text", "text": "hello", "index": 3}'
-)
-
-PROMPT_FILL_FORM_JSON = (
-    'You have selected the `fill_form` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "fill_form", "form": [\n'
-    '  {"text": <text_input_1>, "index": <target_index_1>},\n'
-    '  {"text": <text_input_2>, "index": <target_index_2>}\n'
-    ']}\n'
-    'Guidelines:\n'
-    '- Each item in "form" must have "text" and either "index" or ("x", "y").\n'
-    '- Use only visible indices.\n'
-    '- Do not add extra keys.\n'
-    'Common mistakes:\n'
-    '- Omitting "text" or "index".\n'
-    '- Using out-of-range indices.\n'
-    'Example: {"action_type": "fill_form", "form": [{"text": "John", "index": 2}, {"text": "Doe", "index": 3}]}'
-)
-
-PROMPT_ANSWER_JSON = (
-    'You have selected the `answer` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "answer", "text": <answer_text>}\n'
-    'Guidelines:\n'
-    '- "text" should be your answer to the user.\n'
-    '- Do not add extra keys.\n'
-    'Common mistakes:\n'
-    '- Forgetting the "text" key.\n'
-    'Example: {"action_type": "answer", "text": "You have no events today."}'
-)
-
-PROMPT_STATUS_JSON = (
-    'You have selected the `status` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "status", "goal_status": <complete|infeasible>}\n'
-    'Guidelines:\n'
-    '- Use "complete" if the task is done, "infeasible" if it cannot be done.\n'
-    '- Do not add extra keys.\n'
-    'Common mistakes:\n'
-    '- Misspelling "goal_status".\n'
-    'Example: {"action_type": "status", "goal_status": "complete"}'
-)
-
-PROMPT_KEYBOARD_ENTER_JSON = (
-    'You have selected the `keyboard_enter` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "keyboard_enter"}\n'
-    'Guidelines:\n'
-    '- No extra keys.\n'
-    'Example: {"action_type": "keyboard_enter"}'
-)
-
-PROMPT_NAVIGATE_HOME_JSON = (
-    'You have selected the `navigate_home` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "navigate_home"}\n'
-    'Guidelines:\n'
-    '- No extra keys.\n'
-    'Example: {"action_type": "navigate_home"}'
-)
-
-PROMPT_NAVIGATE_BACK_JSON = (
-    'You have selected the `navigate_back` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "navigate_back"}\n'
-    'Guidelines:\n'
-    '- No extra keys.\n'
-    'Example: {"action_type": "navigate_back"}'
-)
-
-PROMPT_SCROLL_JSON = (
-    'You have selected the `scroll` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "scroll", "direction": <up|down|left|right>, "index": <optional_target_index>}\n'
-    'Guidelines:\n'
-    '- "direction" must be one of up, down, left, right.\n'
-    '- "index" is optional; omit if scrolling the whole screen.\n'
-    'Common mistakes:\n'
-    '- Misspelling direction.\n'
-    '- Using an invalid index.\n'
-    'Example: {"action_type": "scroll", "direction": "down", "index": 2}'
-)
-
-PROMPT_OPEN_APP_JSON = (
-    'You have selected the `open_app` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "open_app", "app_name": <name>}\n'
-    'Guidelines:\n'
-    '- "app_name" must be the exact name of the app.\n'
-    '- No extra keys.\n'
-    'Common mistakes:\n'
-    '- Misspelling the app name.\n'
-    'Example: {"action_type": "open_app", "app_name": "Calendar"}'
-)
-
-PROMPT_WAIT_JSON = (
-    'You have selected the `wait` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "wait"}\n'
-    'Guidelines:\n'
-    '- No extra keys.\n'
-    'Example: {"action_type": "wait"}'
 )
 
 GUIDANCE = (
@@ -502,7 +366,8 @@ class T3A(base_agent.EnvironmentInteractingAgent):
             'after_screenshot': None,
             'before_element_list': None,
             'after_element_list': None,
-            'action_prompt': None,
+            'action_selection_prompt': None,
+            'action_execution_prompt': None,
             'action_output': None,
             'action_raw_response': None,
             'summary_prompt': None,
@@ -525,7 +390,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         step_data['before_screenshot'] = state.pixels.copy()
         step_data['before_element_list'] = ui_elements
 
-        action_prompt = _action_selection_prompt(
+        action_selection_prompt = _action_selection_prompt(
             goal,
             [
                 'Step ' + str(i + 1) + ': ' + step_info['summary']
@@ -534,9 +399,9 @@ class T3A(base_agent.EnvironmentInteractingAgent):
             before_element_list,
             self.additional_guidelines,
         )
-        step_data['action_prompt'] = action_prompt
+        step_data['action_selection_prompt'] = action_selection_prompt
         action_output, is_safe, raw_response = self.llm.predict(
-            action_prompt,
+            action_selection_prompt,
         )
 
         if is_safe == False:  # pylint: disable=singleton-comparison
@@ -547,14 +412,13 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         if not raw_response:
             raise RuntimeError('Error calling LLM in action selection phase.')
 
-        step_data['action_output'] = action_output
         step_data['action_raw_response'] = raw_response
 
-        reason, action = m3a_utils.parse_reason_action_output(action_output)
+        reason, selected_action = m3a_utils.parse_reason_action_output(action_output)
 
         # If the output is not in the right format, add it to step summary which
         # will be passed to next step and return.
-        if (not reason) or (not action):
+        if (not reason) or (not selected_action):
             print('Action prompt output is not in the correct format.')
             step_data['summary'] = (
                 'Output for action selection is not in the correct format, so no'
@@ -567,9 +431,43 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
 
-        print('Action: ' + action)
+        print('Selected Action: ' + selected_action)
         print('Reason: ' + reason)
+        if selected_action not in json_action._ACTION_TYPES:
+            print('Action not in the action list.')
+            step_data['summary'] = (
+                'The action selected is not in the action list, so no action is'
+                ' performed.'
+            )
+            self.history.append(step_data)
 
+            return base_agent.AgentInteractionResult(
+                False,
+                step_data,
+            )
+        
+        action_detail_prompt = ACTION_KEY_TO_PROMPT[selected_action]
+        action_execution_prompt = ACTION_EXECUTION_PROMPT_TEMPLATE.format(
+            prompt_for_selected_action=action_detail_prompt,
+            goal=goal,
+            history=[
+                'Step ' + str(i + 1) + ': ' + step_info['summary']
+                for i, step_info in enumerate(self.history)
+            ],
+            ui_elements_description=before_element_list,
+            additional_guidelines=self.additional_guidelines,
+        )
+        step_data['action_execution_prompt'] = action_execution_prompt
+
+        action_output, is_safe, raw_response = self.llm.predict(
+            action_execution_prompt,
+        )
+
+        action_detail_reason, action = m3a_utils.parse_reason_action_output(action_output)
+        step_data['action_output'] = action_output
+
+        print('Action detail reason: ' + action_detail_reason)
+        print('Action detail: ' + action)
         try:
             converted_action = json_action.JSONAction(
                 **agent_utils.extract_json(action),

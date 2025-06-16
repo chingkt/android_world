@@ -26,4 +26,4 @@ poetry.lock
 venv
 .env
 
-ui_log.txt
+*ui_log.txt
