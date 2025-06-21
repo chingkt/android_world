@@ -1,4 +1,5 @@
 import json
+import time
 
 from android_world.env import representation_utils
 from android_world.agents import m3a_utils
@@ -64,6 +65,7 @@ class UI_Elem_Description_Generator:
                 "label": label,
                 "hint": hint,
                 "clickable": elem.is_clickable,
+                "long_clickable": elem.is_long_clickable,
                 "editable": elem.is_editable,
                 "scrollable": elem.is_scrollable,
                 "visible": elem.is_visible,
@@ -87,40 +89,16 @@ class UI_Elem_Description_Generator:
         返回:
             str - 可直接发送给 LLM 的 prompt。
         """
-#         prompt_header = """You are a smart assistant helping to understand the layout and purpose of a mobile app screen.
-#
-# Given the following simplified UI elements (in JSON format), briefly summarize:
-# - The screen layout (e.g. top bar, form, list, bottom area)
-# - The main interactive components (buttons, inputs, scrollable views)
-# - The likely purpose of the screen (e.g. add item, edit entry, overview)
-#
-# Be concise and do not assume functionality that is not visible.
-#
-# JSON:"""
-        prompt_header = """Given the following UI elements in JSON format, summarize in 1–2 sentences what this mobile screen likely shows and how it's structured.
+        # prompt_header = """Given the following UI elements in JSON format, summarize in 1–2 sentences what this mobile screen likely shows and how it's structured.
+        #
+        # JSON:"""
+
+        prompt_header = """Summarize the visible structure of the screen based on this JSON. Focus only on top-level layout, scrollable components, and repeated elements. Do not describe every element in detail.
 
         JSON:"""
 
         json_content = json.dumps(ui_elements, indent=2, ensure_ascii=False)
         return f"{prompt_header}\n```\n{json_content}\n```"
-
-    # def convert_ui_elements_readable(self,ui_elements: list[dict]) -> str:
-    #     lines = []
-    #     for elem in ui_elements:
-    #         line = f"[{elem['index']}] {elem['type']:10} | label='{elem['label']}'"
-    #         if elem['hint']:
-    #             line += f" | hint='{elem['hint']}'"
-    #         line += f" | clickable={'Yes' if elem['clickable'] else 'No'}"
-    #         if elem['editable']:
-    #             line += " | editable=Yes"
-    #         if 'likely_field' in elem:
-    #             line += f" | likely_field='{elem['likely_field']}'"
-    #         if elem['position']:
-    #             x = f"{elem['position']['x_min']}~{elem['position']['x_max']}"
-    #             y = f"{elem['position']['y_min']}~{elem['position']['y_max']}"
-    #             line += f" | position=(x:{x}, y:{y})"
-    #         lines.append(line)
-    #     return "\n".join(lines)
 
     def filter_out_invalid_ui_elements(
             self, ui_elements: list[representation_utils.UIElement],
@@ -213,7 +191,7 @@ class UI_Elem_Description_Generator:
         prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info)
         llm = infer.GeminiGcpWrapper(model_name)
         summary, _, _ = llm.predict(prompt)
-        print(summary)
+        print("Summary generated for UI Elements: " + summary)
 
         # # 生成可读的描述
         # tree_info = UI_Elem_Description_Generator().convert_ui_elements_readable(

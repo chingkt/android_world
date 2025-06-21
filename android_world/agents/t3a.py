@@ -14,6 +14,7 @@
 
 """T3A: Text-only Autonomous Agent for Android."""
 
+import time
 from android_world.agents import agent_utils
 from android_world.agents import base_agent
 from android_world.agents import infer
@@ -172,6 +173,11 @@ GUIDANCE = (
     ' list will appear. This usually indicating this is a enum field and you'
     ' should try to select the best match by clicking the corresponding one'
     ' in the list.\n'
+    '- When you cannot find any suitable action type, check if there is a UI element called `More options`'
+    ', which usually contains more'
+    ' actions that you can perform. You can click on it to reveal more'
+    ' options, then select the action you want to perform from the revealed'
+    ' options.\n'
 )
 
 ACTION_SELECTION_PROMPT_TEMPLATE = (
@@ -185,11 +191,22 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
         + '\n\nNow select the name of an action from the above list,'
           ' following the reason why you do that. Your answer should look like:\n'
           'Reason: ...\nAction: <action_type>\n\n'
+        'For example, if you want to click on the first UI element, your answer'
+            ' should look like:\n'
+        'Reason: I want to click on the first UI element because it is a button'
+        ' that I need to interact with.\n'
+        'Action: click\n\n'
+        'If you want to answer a question, your answer should look like:\n'
+        'Reason: I want to answer the question because it is a chat message'
+        ' that the user asked.\n'
+        'Action: answer\n\n'
+        'For the details of the action, we do it in the next step, so'
+        ' you can just use the action_type in your answer.\n'
           'Your Answer:\n'
 )
 
 SUMMARIZATION_PROMPT_TEMPLATE = (
-        PROMPT_PREFIX
+        PROMPT_PREFIX_NO_FORMAT
         + '\nThe (overall) user goal/request is:{goal}\n'
           'Now I want you to summerize the latest step based on the action you'
           ' pick with the reason and descriptions for the before and after (the'
@@ -215,6 +232,61 @@ SUMMARIZATION_PROMPT_TEMPLATE = (
           ' memory to include information that needs to be remembered, or shared'
           ' between different apps.\n\n'
           'Summary of this step: '
+)
+
+SUMMARIZATION_PROMPT_TEMPLATE_NEW = (
+    PROMPT_PREFIX_NO_FORMAT
+    + '\nThe (overall) user goal/request is: {goal}\n'
+      'Now I want you to summarize the latest step based on the action you '
+      'picked, the reason behind it, and the descriptions for the before and after '
+      'screenshots (representing the screen state before and after the action).\n\n'
+      'Here is the description for the BEFORE screenshot:\n{before_elements}\n\n'
+      'Here is the description for the AFTER screenshot:\n{after_elements}\n\n'
+      'This is the action you picked: {action}\n'
+      'Based on the reason: {reason}\n\n'
+      'Your task is to generate a structured JSON object with the following fields:\n'
+      '1. "summary": A short one-line summary of the step (what was done, why, and the outcome).\n'
+      '2. "status": Either "successful" or "failed", based on whether the action had the intended effect.\n'
+      '3. "reason": A short justification of the status — analyze whether the UI changed in a way that confirms or contradicts the success of the action. Be critical, and use evidence from before/after UI and the button index.\n'
+      '4. "status_detail": A short tag describing the specific type of result (e.g., "ui_not_ready", "click_no_effect", "partial_success", "wrong_view", "success_full", "success_input").\n'
+      '5. "ui_changed": A boolean flag indicating whether the UI elements or structure changed after the action.\n'
+      '6. "new_knowledge": A short string describing what new, **verifiable and atomic** knowledge was gained from this step. This may include:\n'
+      '   - confirmed interactions that work (e.g., "long-pressing a file shows file actions")\n'
+      '   - confirmed failures (e.g., "clicking Chrome in open-with dialog does not launch the file")\n'
+      '   - redundant or inert actions (e.g., "clicking task.html again has no effect")\n\n'
+      'This field should describe facts about the UI **state or behavior**, not abstract page names or vague screen descriptions.\n'
+      'Only include this field if the UI clearly confirms a new and reusable behavior, constraint, or failure pattern.\n'
+      '**You should only set "new_knowledge" to "None" if you are genuinely uncertain or if the UI provides no clear evidence of a new interaction pattern, success, or failure. '
+      'If the action produced a visible result — even a redundant or failed one — you should describe what was learned.**\n\n'
+
+      '⚠️ Note: Even failed or redundant actions can yield valuable new knowledge, such as:\n'
+      '- "Clicking the same button again has no effect"\n'
+      '- "Typing into a disabled field does not update its content"\n'
+      'As long as the UI **clearly confirms the outcome**, such failure cases should be included as new knowledge.\n\n'
+
+      'Some helpful tips:\n'
+      '- Be concise and critical.\n'
+      '- Use screen changes (e.g., UI element at clicked index disappears, screen layout changes, expected labels appear/disappear) to infer status.\n'
+      '- If nothing changed after a click, it likely failed — unless the change is expected to be delayed.\n'
+      '- For actions like text input, success can be inferred if the field’s value has changed.\n'
+      '- For clicks, compare structure and visibility of the target element and downstream UI.\n'
+      '- Try to infer the "state" before and after this action (e.g., in file manager, in Chrome, in share sheet). Each action should be treated as an atomic operation transitioning between UI states.\n'
+      '- If the state after the action is identical to a previously seen failed state, consider this step redundant or unproductive.\n'
+      '- Use both the visual and structural cues to reason about whether a meaningful transition happened.\n'
+      '- Do NOT infer or speculate — if it\'s unclear whether something new was revealed, return "None".\n'
+      '- Think of each value in "new_knowledge" as a factual entry that could be stored in memory and used for future decision-making.\n\n'
+
+      'Return only the JSON object below, with all keys included:\n\n'
+      '```\n'
+      '{{\n'
+      '  "summary": "...",\n'
+      '  "status": "successful" or "failed",\n'
+      '  "reason": "...",\n'
+      '  "status_detail": "...",\n'
+      '  "ui_changed": true or false,\n'
+      '  "new_knowledge": "..." or "None"\n'
+      '}}\n'
+      '```\n'
 )
 
 
@@ -322,7 +394,7 @@ def _summarize_prompt(
     Returns:
       The text prompt for summarization that will be sent to gpt4v.
     """
-    return SUMMARIZATION_PROMPT_TEMPLATE.format(
+    return SUMMARIZATION_PROMPT_TEMPLATE_NEW.format(
         goal=goal,
         action=action,
         reason=reason,
@@ -463,14 +535,14 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             action_execution_prompt,
         )
 
-        action_detail_reason, action = m3a_utils.parse_reason_action_output(action_output)
+        action_detail_reason, action_detail = m3a_utils.parse_reason_action_output(action_output)
         step_data['action_output'] = action_output
 
         print('Action detail reason: ' + action_detail_reason)
-        print('Action detail: ' + action)
+        print('Action detail: ' + action_detail)
         try:
             converted_action = json_action.JSONAction(
-                **agent_utils.extract_json(action),
+                **agent_utils.extract_json(action_detail),
             )
         except Exception as e:  # pylint: disable=broad-exception-caught
             print('Failed to convert the output to a valid action.')
@@ -540,6 +612,13 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
 
+        if converted_action.action_type in ['open_app']:
+            print('Action is open_app; waiting 2s for UI to settle...')
+            time.sleep(2)
+        elif converted_action.action_type in ['click']:
+            print('Action is click; waiting 3s for UI to settle...')
+            time.sleep(3)
+
         state = self.get_post_transition_state()
         ui_elements = state.ui_elements
 
@@ -556,8 +635,8 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         summary_prompt = _summarize_prompt(
             goal,
-            action,
-            reason,
+            action_detail,
+            action_detail_reason,
             before_element_list,
             after_element_list,
         )
@@ -571,7 +650,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         step_data['summary_prompt'] = summary_prompt
         step_data['summary'] = (
-            f'Action selected: {action}. {summary}'
+            f'Action selected: {action_detail}. {summary}'
             if raw_response
             else 'Error calling LLM in summerization phase.'
         )

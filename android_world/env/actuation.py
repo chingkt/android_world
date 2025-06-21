@@ -30,6 +30,7 @@ def execute_adb_action(
     screen_elements: list[Any],  # list[UIElement]
     screen_size: tuple[int, int],
     env: env_interface.AndroidEnvInterface,
+    get_state: Any = None,  # Unused, but required for compatibility.
 ) -> None:
   """Execute an action based on a JSONAction object.
 
@@ -40,6 +41,12 @@ def execute_adb_action(
       env: The environment to execute the action in.
   """
   if action.action_type in ['click', 'double_tap', 'long_press']:
+    if get_state is not None:
+      print(f'length of elements before get_state: {len(screen_elements)}')
+      state = get_state(wait_to_stabilize=True)
+      screen_elements = state.ui_elements
+      print(f'length of elements after get_state: {len(screen_elements)}')
+
     idx = action.index
     x = action.x
     y = action.y
@@ -53,6 +60,7 @@ def execute_adb_action(
       if element.bbox_pixels is None:
         raise ValueError('Bbox is not present on element.')
       x, y = element.bbox_pixels.center
+      print(f'Clicking on element {element} {idx} at coordinates ({x}, {y})')
       x, y = int(x), int(y)
       if action.action_type == 'click':
         adb_utils.tap_screen(x, y, env)
@@ -80,7 +88,7 @@ def execute_adb_action(
         # First focus on enter text UI element.
         click_action = copy.deepcopy(action)
         click_action.action_type = 'click'
-        execute_adb_action(click_action, screen_elements, screen_size, env)
+        execute_adb_action(click_action, screen_elements, screen_size, env, get_state)
         time.sleep(1.0)
       adb_utils.type_text(text, env, timeout_sec=10)
       adb_utils.press_enter_button(env)
@@ -103,7 +111,7 @@ def execute_adb_action(
           )
 
           execute_adb_action(
-              input_text_action, screen_elements, screen_size, env
+              input_text_action, screen_elements, screen_size, env, get_state
           )
 
           hide_keyboard_action = json_action.JSONAction(
@@ -111,7 +119,7 @@ def execute_adb_action(
               keycode='KEYCODE_ESCAPE',  # KEYCODE_BACK
           )
           execute_adb_action(
-              hide_keyboard_action, screen_elements, screen_size, env
+              hide_keyboard_action, screen_elements, screen_size, env, get_state
           )
 
           # Wait for the keyboard to hide.
