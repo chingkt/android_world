@@ -27,3 +27,4 @@ venv
 .env
 
 *ui_log.txt
+run_*
