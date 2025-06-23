@@ -76,6 +76,9 @@ PROMPT_PREFIX = (
 PROMPT_PREFIX_NO_FORMAT = (
     'You are an agent who can operate an Android phone on behalf of a user.'
     " Based on user's goal/request, you may\n"
+    '- Open an app: action_type: open_app\n'
+    'This action is always the first action you should  take, as it'
+    ' is usually necessary to open an app before performing any other actions.\n'
     '- Answer back if the request/goal is a question (or a chat message), like'
     ' user asks "What is my schedule for today?".\n'
     '- Complete some tasks described in the requests/goals by performing'
@@ -102,7 +105,6 @@ PROMPT_PREFIX_NO_FORMAT = (
     '- Navigate to the home screen: action_type: navigate_home\n'
     '- Navigate back: action_type: navigate_back\n'
     '- Scroll the screen or a scrollable UI element: action_type: scroll\n'
-    '- Open an app: action_type: open_app\n'
     '- Wait for the screen to update: action_type: wait\n'
 )
 

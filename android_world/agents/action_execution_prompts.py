@@ -179,6 +179,8 @@ PROMPT_OPEN_APP_ACTION = (
     'You have selected the `open_app` action. Now construct the JSON for this action.\n'
     'Format: {"action_type": "open_app", "app_name": <name>}\n'
     'Guidelines:\n'
+    '- The task description always provides the *EXACT* app name explicitly,'
+    ' so you can just use the *EXACT* name directly in the action.\n'
     '- "app_name" must be the exact name of the app as it appears on the device.\n'
     '- No extra keys or fields.\n'
     '- Use this action only to open an app directly.\n'
