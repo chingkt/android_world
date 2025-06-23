@@ -91,7 +91,6 @@ def execute_adb_action(
         execute_adb_action(click_action, screen_elements, screen_size, env, get_state)
         time.sleep(1.0)
       adb_utils.type_text(text, env, timeout_sec=10)
-      adb_utils.press_enter_button(env)
     else:
       logging.warning(
           'Input_text action indicated, but no text provided. No '
