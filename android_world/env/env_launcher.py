@@ -15,7 +15,7 @@
 """Launches the environment used in the benchmark."""
 
 import platform
-
+import uiautomator2 as u2
 from absl import logging
 from android_world.env import android_world_controller
 from android_world.env import interface

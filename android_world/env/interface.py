@@ -309,6 +309,7 @@ class AsyncAndroidEnv(AsyncEnv):
         state.ui_elements,
         self.logical_screen_size,
         self.controller,
+        self.get_state,
     )
 
   def hide_automation_ui(self) -> None:

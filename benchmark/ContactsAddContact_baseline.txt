@@ -1,0 +1,602 @@
+Initializing agent...
+Starting eval with agent t3a_gemini_gcp and writing to /Users/I761691/android_world/runs/run_20250621T163221672186
+Running task: ContactsAddContact
+================================
+Running task ContactsAddContact with goal "Create a new contact for Hugo Pereira. Their number is +13920741751."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to start creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Hugo", "index": 7}
+Reason: Input the first name, Hugo, into the First Name field.
+Summary: Typed "Hugo" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Pereira", "index": 8}
+Reason: Type last name as Pereira in the Last name field.
+Summary: Typed "Pereira" into the "Last name" field (index 8) successfully.
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+13920741751", "index": 10}
+Reason: The phone number needs to be added to the contact. The phone number field is at index 10.
+Summary: Entered the phone number +13920741751 into the 'Phone' field (index 10); the field now displays the entered number, formatted as +1 392-074-1751.
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact has been created with the required information (name and phone number). Now, click the "Save" button to save the new contact.
+Summary: Clicked "Save" (index 2) to save the new contact; the screen changed to the Phone app's contact list, showing Hugo Pereira.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact Hugo Pereira has been successfully created and saved. The task is complete.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Hugo Pereira. Their number is +13920741751.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  1.0                1.0                  7.0             44.4              0.0
+========= Average =========         0                  1.0                1.0                  7.0             44.4              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Mariam Chen. Their number is +18332445674."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Mariam", "index": 7}
+Reason: Input the first name as Mariam.
+Summary: Typed "Mariam" into the "First name" field (index 7).
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Chen", "index": 8}
+Reason: Type the last name, "Chen" into the Last name field.
+Summary: Typed "Chen" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+18332445674", "index": 10}
+Reason: The phone number needs to be added to the contact.  Element 10 corresponds to the phone number field.
+Summary: Added phone number +18332445674 to the 'Phone' field (index 10).
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact has been created with the required information (name and phone number). Now click the "Save" button to save the new contact.
+Summary: Clicked "Save" to save the new contact Mariam Chen with phone number +1 833-244-5674.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created and saved successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Mariam Chen. Their number is +18332445674.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  2.0                1.0                  7.0             85.9              0.0
+========= Average =========         0                  2.0                1.0                  7.0             85.9              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Isla Martin. Their number is +15256606183."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Isla", "index": 7}
+Reason: Input the first name, Isla, in the First name field.
+Summary: Entered "Isla" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Martin", "index": 8}
+Reason: Enter "Martin" as the last name. The "Last name" field is at index 8.
+Summary: Entered "Martin" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+15256606183", "index": 10}
+Reason: The next step is to enter the phone number. The phone number field is at index 10.
+Summary: Entered the phone number +15256606183 in the phone number field (index 10).
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact details have been entered. Now, click the "Save" button to save the new contact.
+Summary: Clicked "Save" to save the new contact Isla Martin with phone number +1 525-660-6183.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Isla Martin. Their number is +15256606183.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  3.0                1.0                  7.0            125.7              0.0
+========= Average =========         0                  3.0                1.0                  7.0            125.7              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Sophie Ahmed. Their number is +11555474287."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation screen.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Sophie", "index": 7}
+Reason: Input the first name as Sophie in the First name field.
+Summary: Typed "Sophie" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Ahmed", "index": 8}
+Reason: Type the last name "Ahmed" into the corresponding field. It is at index 8.
+Summary: Typed "Ahmed" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+11555474287", "index": 10}
+Reason: The phone number needs to be added to the contact. The phone number field is at index 10.
+Summary: Entered the phone number +11555474287 into the 'Phone' field (index 10).
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact details have been entered. Click "Save" to create the contact.
+Summary: Clicked "Save" to create the contact with the entered details.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Sophie Ahmed. Their number is +11555474287.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  4.0                1.0                  7.0            167.8              0.0
+========= Average =========         0                  4.0                1.0                  7.0            167.8              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Sophia Zhang. Their number is +17890682839."
+----------step 1
+Error calling LLM, will retry in {retry_delay} seconds
+None Stream removed
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to create a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Sophia", "index": 7}
+Reason: Input the first name as Sophia in the First name field.
+Summary: Typed "Sophia" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Zhang", "index": 8}
+Reason: Type the last name "Zhang" into the corresponding field.
+Summary: Typed "Zhang" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+17890682839", "index": 10}
+Reason: The phone number needs to be added to the contact. The phone number field is at index 10.
+Summary: Added phone number +17890682839 to the 'Phone' field (index 10).
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact has been created with the required information (name and phone number). Now click the "Save" button to save the new contact.
+Summary: Clicked "Save" to save the new contact Sophia Zhang with phone number +17890682839.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Sophia Zhang. Their number is +17890682839.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  5.0                1.0                  7.0            209.2              0.0
+========= Average =========         0                  5.0                1.0                  7.0            209.2              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Samuel Ferreira. Their number is +15242910846."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Samuel", "index": 7}
+Reason: Input the first name as Samuel.
+Summary: Typed "Samuel" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Ferreira", "index": 8}
+Reason: Type the last name "Ferreira" into the "Last name" field (index 8).
+Summary: Typed "Ferreira" into the last name field.
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+15242910846", "index": 10}
+Reason: The next step is to add the phone number +15242910846. The phone number field is at index 10.
+Summary: Entered the phone number +15242910846 in the phone number field (index 10).
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact details have been entered. Now, click the "Save" button to save the new contact.
+Summary: Clicked "Save" to save the new contact Samuel Ferreira with phone number +1 524-291-0846.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been successfully created and saved. The task is complete.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Samuel Ferreira. Their number is +15242910846.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  6.0                1.0                  7.0            248.5              0.0
+========= Average =========         0                  6.0                1.0                  7.0            248.5              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Eva Zhang. Their number is +18128103689."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app successfully.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to create a new contact.
+Summary: Clicked "Create new contact" button, navigated to contact creation screen.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Eva", "index": 7}
+Reason: Input the first name as Eva.
+Summary: Typed "Eva" into the "First name" field (index 7); the field now displays "Eva".
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Zhang", "index": 8}
+Reason: Input the last name, Zhang, into the corresponding field.
+Summary: Input "Zhang" into the last name field (index 8) successfully.
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+18128103689", "index": 10}
+Reason: Input the phone number +18128103689 into the phone number field (index 10).
+Summary: Entered phone number +18128103689 into the "Phone" field (index 10); the field now displays the entered number in the formatted version +1 812-810-3689.
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact has been created with the required information (name and phone number). Now click the "Save" button to save the new contact.
+Summary: Clicked "Save" (index 2) to save the new contact Eva Zhang with phone number +18128103689.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Eva Zhang. Their number is +18128103689.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  7.0                1.0                  7.0            289.7              0.0
+========= Average =========         0                  7.0                1.0                  7.0            289.7              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  1.0
+parameterized               1.0
+Running task ContactsAddContact with goal "Create a new contact for Louis Hernandez. Their number is +16710004837."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation screen.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Louis", "index": 7}
+Reason: Input the first name Louis into the First Name field.
+Summary: Typed "Louis" into the "First name" field (index 7) successfully.
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Hernandez", "index": 8}
+Reason: Type last name as Hernandez in the Last name field.
+Summary: Entered "Hernandez" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+16710004837", "index": 10}
+Reason: The phone number needs to be added to the contact.  Element 10 corresponds to the phone number field.
+Summary: Summary of this step: Entered the phone number +16710004837 into the 'Phone' field (index 10); the field now displays the entered number, formatted as +1 671-000-4837.
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact information has been entered. Click "Save" to create the contact.
+Summary: Clicked "Save" to create the contact with the entered information for Louis Hernandez, but the Phone app was opened instead of saving the contact.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "navigate_back"}
+Reason: The save action failed in the previous step, likely due to a transient issue.  I'll navigate back to the contact creation screen and retry saving.
+Error calling LLM, will retry in {retry_delay} seconds
+None Stream removed
+Summary: Navigated back from the contact details screen to the contact creation screen to retry saving the contact after a suspected transient issue prevented the save.
+
+Completed step 7.
+----------step 8
+Action: {"action_type": "open_app", "app_name": "Contacts"}
+Reason: The save operation failed in step 6, likely due to a transient issue.  Navigating back and retrying the save action is a reasonable next step. The save button is at index 21, but it is not present in the current view. The current view is the home screen. I need to open the contacts app again.
+Summary: Opened the Contacts app to retry saving the new contact after a previous failure.
+
+Completed step 8.
+----------step 9
+Action: {"action_type": "click", "index": 1}
+Reason: The previous attempt to save the contact failed.  I'm now in the Contacts app main screen. I need to create a new contact, so I'll click the "Create contact" button.
+Summary: Clicked the floating action button with content description "Create contact" to start creating a new contact.
+
+Completed step 9.
+----------step 10
+Action: {"action_type": "click", "index": 2}
+Reason: The UI elements show the screen for creating a new contact.  The "Save" button is enabled, so try clicking it again to save the new contact.
+Summary: Clicked "Save" but a dialog appeared saying "Add info to save as a contact." indicating that more information is needed to save the contact.
+
+Completed step 10.
+----------step 11
+Action: {"action_type": "click", "index": 1}
+Reason: The dialog box indicates that more information is needed to save the contact. Clicking "OK" will dismiss the dialog and allow me to add more information.
+Summary: Clicked "OK" to dismiss the dialog box asking for more contact information, successfully proceeding to the contact creation screen.
+
+Completed step 11.
+----------step 12
+Action: {"action_type": "input_text", "text": "Louis", "index": 7}
+Reason: Enter the first name, last name and phone number.
+Summary: Typed "Louis" into the "First name" field (index 7).
+
+Completed step 12.
+Agent did not indicate task is done. Reached max number of steps.
+Task Failed ❌;  Create a new contact for Louis Hernandez. Their number is +16710004837.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  8.0               0.88                 7.62            365.2              0.0
+========= Average =========         0                  8.0               0.88                 7.62            365.2              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                 0.88
+parameterized              0.88
+Running task ContactsAddContact with goal "Create a new contact for Maria Ferreira. Their number is +16528955874."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to begin creating a new contact.
+Summary: Clicked "Create new contact" button, which successfully opened the contact creation page.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Maria", "index": 7}
+Reason: Inputting the first name as Maria.
+Summary: Typed "Maria" into the "First name" field (index 7).
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Ferreira", "index": 8}
+Reason: Type the last name, Ferreira, in the Last name field.
+Summary: Summary of this step: Entered "Ferreira" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+16528955874", "index": 10}
+Reason: The next step is to enter the phone number. Element with index 10 is the phone number field.
+Summary: Entered the phone number +16528955874 into the 'Phone' field (index 10); the number appears formatted as +1 652-895-5874 in the field.
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact has been created with the required information (name and phone number). Now, click the "Save" button to save the new contact.
+Summary: Clicked "Save" (index 2) to save the new contact Maria Ferreira with phone number +16528955874; the screen changed to the Phone app's contacts tab.
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Maria Ferreira. Their number is +16528955874.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                  9.0               0.89                 7.56            409.2              0.0
+========= Average =========         0                  9.0               0.89                 7.56            409.2              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                 0.89
+parameterized              0.89
+Running task ContactsAddContact with goal "Create a new contact for Maria Zhang. Their number is +19811169450."
+----------step 1
+Action: {"action_type": "open_app", "app_name": "Phone"}
+Reason: Open the phone app to create a new contact.
+Summary: Opened Phone app to create a new contact.
+
+Completed step 1.
+----------step 2
+Action: {"action_type": "click", "index": 1}
+Reason: Click "Create new contact" to create a new contact.
+Summary: Clicked "Create new contact" button, navigated to contact creation screen.
+
+Completed step 2.
+----------step 3
+Action: {"action_type": "input_text", "text": "Maria", "index": 7}
+Reason: Input the first name as Maria.
+Summary: Typed "Maria" into the "First name" field (index 7).
+
+Completed step 3.
+----------step 4
+Action: {"action_type": "input_text", "text": "Zhang", "index": 8}
+Reason: Type in the last name, "Zhang", into the corresponding field.
+Summary: Typed "Zhang" into the last name field (index 8).
+
+Completed step 4.
+----------step 5
+Action: {"action_type": "input_text", "text": "+19811169450", "index": 10}
+Reason: Type the phone number into the phone number field.
+Summary: Entered the phone number +19811169450 into the 'Phone' field (index 10); the field now displays the entered number, formatted as +1 981-116-9450.
+
+Completed step 5.
+----------step 6
+Action: {"action_type": "click", "index": 2}
+Reason: The contact information has been entered. Click "Save" to create the contact.
+Summary: Clicked "Save" to create the contact; the screen changed to the Phone app's contacts tab, showing the newly created contact "Maria Zhang".
+
+Completed step 6.
+----------step 7
+Action: {"action_type": "status", "goal_status": "complete"}
+Reason: The contact has been created successfully.
+Completed step 7.
+Agent indicates task is done.
+Task Successful ✅;  Create a new contact for Maria Zhang. Their number is +19811169450.
+
+
+                             task_num  num_complete_trials  mean_success_rate  mean_episode_length  total_runtime_s  num_fail_trials
+task                                                                                                                                
+ContactsAddContact                  0                 10.0                0.9                  7.5            451.4              0.0
+========= Average =========         0                 10.0                0.9                  7.5            451.4              0.0
+
+
+              mean_success_rate
+difficulty                 easy
+tags                           
+data_entry                  0.9
+parameterized               0.9
+
+Finished running agent t3a_gemini_gcp on android_world family. Wrote to /Users/I761691/android_world/runs/run_20250621T163221672186.
