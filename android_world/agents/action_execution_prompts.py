@@ -204,6 +204,7 @@ PROMPT_WAIT_ACTION = (
 
 ACTION_EXECUTION_PROMPT_TEMPLATE = (
         '{prompt_for_selected_action}'
+        + '\nThis is the reason you provided for the action: {reason}'
         + '\nThe current user goal/request is: {goal}'
         + '\n\nHere is a history of what you have done so far:\n{history}'
         + '\nHere is a list of confirmed facts you have learned during interaction (your memory):\n{memory}'
