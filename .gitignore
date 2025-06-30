@@ -28,3 +28,4 @@ venv
 
 *ui_log.txt
 run_*
+!run_benchmark.sh
