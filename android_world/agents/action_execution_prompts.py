@@ -13,10 +13,9 @@ from android_world.env.json_action import (
     ANSWER,
 )
 
-
 PROMPT_CLICK_ACTION = (
-    'You have selected the `click` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "click", "index": <target_index>}\n'
+    'You have selected the `click` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "click", "index": <target_index>}}\n'
     'Guidelines:\n'
     '- The index must correspond to a visible and interactable UI element on the screen.\n'
     '- The agent should simulate a real tap: the click will be performed at the center of the element\'s bounding box.\n'
@@ -30,12 +29,12 @@ PROMPT_CLICK_ACTION = (
     '- Clicking on a label or static text instead of a button or input field.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
     '- Failing to update the index if the UI changes after a previous action.\n'
-    'Example: {"action_type": "click", "index": 2}'
+    'Example: {{"action_type": "click", "index": 2}}'
 )
 
 PROMPT_LONG_PRESS_ACTION = (
-    'You have selected the `long_press` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "long_press", "index": <target_index>}\n'
+    'You have selected the `long_press` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "long_press", "index": <target_index>}}\n'
     'Guidelines:\n'
     '- The index must correspond to a visible and interactable UI element on the screen.\n'
     '- The agent should simulate a real long press: the press will be performed at the center of the element\'s bounding box and held for a longer duration.\n'
@@ -48,12 +47,12 @@ PROMPT_LONG_PRESS_ACTION = (
     '- Long pressing on a label or static text instead of a button, input field, or selectable item.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
     '- Failing to update the index if the UI changes after a previous action.\n'
-    'Example: {"action_type": "long_press", "index": 1}'
+    'Example: {{"action_type": "long_press", "index": 1}}'
 )
 
 PROMPT_INPUT_TEXT_ACTION = (
-    'You have selected the `input_text` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "input_text", "text": <text_input>, "index": <target_index>}\n'
+    'You have selected the `input_text` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "input_text", "text": <text_input>, "index": <target_index>}}\n'
     'Guidelines:\n'
     '- "text" is the exact string to type into the field.\n'
     '- "index" must correspond to a visible and editable text field on the screen.\n'
@@ -67,15 +66,15 @@ PROMPT_INPUT_TEXT_ACTION = (
     '- Typing into a label, button, or static text instead of an input field.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
     '- Failing to update the index if the UI changes after a previous action.\n'
-    'Example: {"action_type": "input_text", "text": "hello", "index": 3}'
+    'Example: {{"action_type": "input_text", "text": "hello", "index": 3}}'
 )
 
 PROMPT_FILL_FORM_ACTION = (
-    'You have selected the `fill_form` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "fill_form", "form": [\n'
-    '  {"text": <text_input_1>, "index": <target_index_1>},\n'
-    '  {"text": <text_input_2>, "index": <target_index_2>}\n'
-    ']}\n'
+    'You have selected the `fill_form` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "fill_form", "form": [\n'
+    '  {{"text": <text_input_1>, "index": <target_index_1>}},\n'
+    '  {{"text": <text_input_2>, "index": <target_index_2>}}\n'
+    ']}}\n'
     'Guidelines:\n'
     '- Do not click on a dropdown menu or a non-editable field.\n'
     '- Each item in "form" must have "text" and "index".\n'
@@ -92,12 +91,12 @@ PROMPT_FILL_FORM_ACTION = (
     '- Adding unnecessary keys or fields to the JSON.\n'
     '- Failing to update the index if the UI changes after a previous action.\n'
     '- Using out-of-range indices that do not correspond to any UI element.\n'
-    'Example: {"action_type": "fill_form", "form": [{"text": "John", "index": 2}, {"text": "Doe", "index": 3}]}'
+    'Example: {{"action_type": "fill_form", "form": [{{"text": "John", "index": 2}}, {{"text": "Doe", "index": 3}}]}}'
 )
 
 PROMPT_ANSWER_ACTION = (
-    'You have selected the `answer` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "answer", "text": <answer_text>}\n'
+    'You have selected the `answer` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "answer", "text": <answer_text>}}\n'
     'Guidelines:\n'
     '- "text" should be a clear, concise, and direct answer to the user\'s question or request.\n'
     '- The answer should be relevant and factually correct based on the information available on the device.\n'
@@ -110,12 +109,12 @@ PROMPT_ANSWER_ACTION = (
     '- Including UI element indices, JSON, or code in the answer text.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
     '- Using vague or incomplete answers (e.g., just saying "done" or "okay").\n'
-    'Example: {"action_type": "answer", "text": "You have no events today."}'
+    'Example: {{"action_type": "answer", "text": "You have no events today."}}'
 )
 
 PROMPT_STATUS_ACTION = (
-    'You have selected the `status` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "status", "goal_status": <complete|infeasible>}\n'
+    'You have selected the `status` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "status", "goal_status": <complete|infeasible>}}\n'
     'Guidelines:\n'
     '- Use "complete" if the task is done, "infeasible" if it cannot be done.\n'
     '- Only use the allowed values for "goal_status".\n'
@@ -123,45 +122,45 @@ PROMPT_STATUS_ACTION = (
     'Common mistakes:\n'
     '- Misspelling "goal_status" or using an invalid value.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "status", "goal_status": "complete"}'
+    'Example: {{"action_type": "status", "goal_status": "complete"}}'
 )
 
 PROMPT_KEYBOARD_ENTER_ACTION = (
-    'You have selected the `keyboard_enter` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "keyboard_enter"}\n'
+    'You have selected the `keyboard_enter` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "keyboard_enter"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
     '- Use this action only when you want to simulate pressing the Enter key on the keyboard.\n'
     'Common mistakes:\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "keyboard_enter"}'
+    'Example: {{"action_type": "keyboard_enter"}}'
 )
 
 PROMPT_NAVIGATE_HOME_ACTION = (
-    'You have selected the `navigate_home` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "navigate_home"}\n'
+    'You have selected the `navigate_home` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "navigate_home"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
     '- Use this action only to return to the home screen.\n'
     'Common mistakes:\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "navigate_home"}'
+    'Example: {{"action_type": "navigate_home"}}'
 )
 
 PROMPT_NAVIGATE_BACK_ACTION = (
     'You have selected the `navigate_back` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "navigate_back"}\n'
+    'Format: {{"action_type": "navigate_back"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
     '- Use this action only to simulate pressing the back button.\n'
     'Common mistakes:\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "navigate_back"}'
+    'Example: {{"action_type": "navigate_back"}}'
 )
 
 PROMPT_SCROLL_ACTION = (
-    'You have selected the `scroll` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "scroll", "direction": <up|down|left|right>, "index": <optional_target_index>}\n'
+    'You have selected the `scroll` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "scroll", "direction": <up|down|left|right>, "index": <optional_target_index>}}\n'
     'Guidelines:\n'
     '- "direction" must be one of up, down, left, right.\n'
     '- "index" is optional; omit if scrolling the whole screen.\n'
@@ -172,47 +171,48 @@ PROMPT_SCROLL_ACTION = (
     '- Misspelling direction or using an invalid value.\n'
     '- Using an index for a non-scrollable or invisible element.\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "scroll", "direction": "down", "index": 2}'
+    'Example: {{"action_type": "scroll", "direction": "down", "index": 2}}'
 )
 
 PROMPT_OPEN_APP_ACTION = (
-    'You have selected the `open_app` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "open_app", "app_name": <name>}\n'
-    'Guidelines:\n'
-    '- Think about what app or interface is **most directly** related to the goal?'
-    '- The task description always provides the *EXACT* app name explicitly,'
-    ' so you can just use the *EXACT* name directly in the action.\n'
-    '- "app_name" must be the exact name of the app as it appears on the device.\n'
-    '- No extra keys or fields.\n'
-    '- Use this action only to open an app directly.\n'
-    'Common mistakes:\n'
-    '- Misspelling the app name or using an unofficial name.\n'
-    '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "open_app", "app_name": "Calendar"}'
+        'You have selected the `open_app` action. {action_select_reason} Now construct the JSON for this action.\n'
+        'Format: {{"action_type": "open_app", "app_name": <name>}}\n'
+        'Guidelines:\n'
+        # '- The task description always provides the *EXACT* app name explicitly,'
+        '- If the app name is not explicitly mentioned, DO NOT guess or hallucinate one.'
+        '- Only use open_app when you are sure of the exact app name.'
+        ' so you can just use the *EXACT* name directly in the action.\n'
+        '- "app_name" must be the exact name of the app as it appears on the device.\n'
+        '- No extra keys or fields.\n'
+        '- Use this action only to open an app directly.\n'
+        'Common mistakes:\n'
+        '- Misspelling the app name or using an unofficial name.\n'
+        '- Adding unnecessary keys or fields to the JSON.\n'
+        + '\n\nBefore you decide, ask yourself:'
+        + '\n- What app is **most directly** related to the goal?'
+          'Example: {{"action_type": "open_app", "app_name": "Calendar"}}'
 )
 
 PROMPT_WAIT_ACTION = (
-    'You have selected the `wait` action. Now construct the JSON for this action.\n'
-    'Format: {"action_type": "wait"}\n'
+    'You have selected the `wait` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'Format: {{"action_type": "wait"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
     '- Use this action to wait for the screen to update or for a process to complete.\n'
     'Common mistakes:\n'
     '- Adding unnecessary keys or fields to the JSON.\n'
-    'Example: {"action_type": "wait"}'
+    'Example: {{"action_type": "wait"}}'
 )
 
 ACTION_EXECUTION_PROMPT_TEMPLATE = (
-        '{prompt_for_selected_action}'
-        + '\nThis is the reason you provided for the action: {reason}'
-        + '\nThe current user goal/request is: {goal}'
+
+         '\nThe current user goal/request is: {goal}'
+        + '{prompt_for_selected_action}'
         + '\n\nHere is a history of what you have done so far:\n{history}'
-        + '\nHere is a list of confirmed facts you have learned during interaction (your memory):\n{memory}'
-        + '\n\nPlease reflect on the above history and memory. Try to summarize what you’ve already tried, what has worked, and what hasn’t. Use that to inform your next action.'
         + '\n\nHere is a list of descriptions for some UI elements on the current'
           ' screen:\n{ui_elements_description}\n'
-        + '{additional_guidelines}'
-        + '\n\nNow output the action details in the correct JSON format,'
+        # + '{additional_guidelines}'
+        + 'Now output the action details in the correct JSON format,'
           ' following the reason why you do that. Your answer should look like:\n'
           'Reason: ...\nAction: {{"action_type":...}}\n\n'
           'Your Answer:\n'

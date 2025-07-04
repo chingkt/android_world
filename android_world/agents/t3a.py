@@ -549,16 +549,14 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         action_detail_prompt = ACTION_KEY_TO_PROMPT[selected_action]
         action_execution_prompt = ACTION_EXECUTION_PROMPT_TEMPLATE.format(
-            prompt_for_selected_action=action_detail_prompt,
+            prompt_for_selected_action=action_detail_prompt.format(action_select_reason=reason),
             goal=goal,
-            reason=reason,
             history=[
                 'Step ' + str(i + 1) + ': ' + step_info['summary']
                 for i, step_info in enumerate(self.history)
             ],
-            memory=memory_list,
             ui_elements_description=before_element_list,
-            additional_guidelines=self.additional_guidelines,
+            # additional_guidelines=self.additional_guidelines,
         )
         step_data['action_execution_prompt'] = action_execution_prompt
 
