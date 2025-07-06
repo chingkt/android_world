@@ -156,12 +156,10 @@ class UI_Elem_Description_Generator:
             screen_width_height_px: tuple[int, int],
             goal: str = "",
     ) -> str:
-        print(f"Before filtering, number of UI elements: {len(ui_elements)}")
         tree_info = ''
         ui_elements = UI_Elem_Description_Generator().filter_out_invalid_ui_elements(
             ui_elements, screen_width_height_px
         )
-        print(f"After filtering, number of UI elements: {len(ui_elements)}")
         log_to_file(f"UI elements: {ui_elements}")
         for index, ui_element in enumerate(ui_elements):
             tree_info += f'UI element {index}: {str(ui_element)}\n'
@@ -179,10 +177,8 @@ class UI_Elem_Description_Generator:
         """
         Generates a description of UI elements in a list format.
         """
-        print(f"Before filtering, number of UI elements: {len(ui_elements)}")
         filtered_ui_elements = UI_Elem_Description_Generator(model_name).filter_out_useless_ui_elements(
             ui_elements)
-        print(f"After filtering, number of UI elements: {len(filtered_ui_elements)}")
 
         tree_info = UI_Elem_Description_Generator(model_name).convert_ui_elements_to_pure_json(
             filtered_ui_elements)
@@ -220,10 +216,8 @@ class UI_Elem_Description_Generator:
             model_name: str,
             goal: str = "",
     ) -> str:
-        print(f"Before filtering, number of UI elements: {len(ui_elements)}")
         filtered_ui_elements = UI_Elem_Description_Generator().filter_out_useless_ui_elements(
             ui_elements)
-        print(f"After filtering, number of UI elements: {len(filtered_ui_elements)}")
 
         original_description = UI_Elem_Description_Generator().convert_ui_elements_to_pure_json(
             filtered_ui_elements)
