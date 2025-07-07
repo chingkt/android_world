@@ -97,7 +97,7 @@ PROMPT_PREFIX_NO_FORMAT = (
     " feasible (including cases like you don't have enough information or can"
     ' not perform some necessary actions), finish by using the status action'
     ' with infeasible as goal_status: action_type: status\n'
-    "- Answer user's question: action_type: answer\n"
+    "- Only if you think user's question can be completely answered, use: action_type: answer\n"
     '- Click/tap on a UI element: action_type: click\n'
     '- Long press on a UI element: action_type: long_press\n'
     '- Type text into an editable text field: action_type: input_text\n'
@@ -623,6 +623,14 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         if converted_action.action_type == 'answer':
             print('Agent answered with: ' + converted_action.text)
+            step_data['summary'] = (
+                'Agent answered with: ' + converted_action.text
+            )
+            self.history.append(step_data)
+            return base_agent.AgentInteractionResult(
+                False,
+                step_data,
+            )
 
         try:
             self.env.execute_action(converted_action)

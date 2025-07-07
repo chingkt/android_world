@@ -14,7 +14,7 @@ from android_world.env.json_action import (
 )
 
 PROMPT_CLICK_ACTION = (
-    'You have selected the `click` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `click` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "click", "index": <target_index>}}\n'
     'Guidelines:\n'
     '- The index must correspond to a visible and interactable UI element on the screen.\n'
@@ -33,7 +33,7 @@ PROMPT_CLICK_ACTION = (
 )
 
 PROMPT_LONG_PRESS_ACTION = (
-    'You have selected the `long_press` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `long_press` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "long_press", "index": <target_index>}}\n'
     'Guidelines:\n'
     '- The index must correspond to a visible and interactable UI element on the screen.\n'
@@ -51,7 +51,7 @@ PROMPT_LONG_PRESS_ACTION = (
 )
 
 PROMPT_INPUT_TEXT_ACTION = (
-    'You have selected the `input_text` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `input_text` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "input_text", "text": <text_input>, "index": <target_index>}}\n'
     'Guidelines:\n'
     '- "text" is the exact string to type into the field.\n'
@@ -70,7 +70,7 @@ PROMPT_INPUT_TEXT_ACTION = (
 )
 
 PROMPT_FILL_FORM_ACTION = (
-    'You have selected the `fill_form` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `fill_form` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "fill_form", "form": [\n'
     '  {{"text": <text_input_1>, "index": <target_index_1>}},\n'
     '  {{"text": <text_input_2>, "index": <target_index_2>}}\n'
@@ -95,7 +95,7 @@ PROMPT_FILL_FORM_ACTION = (
 )
 
 PROMPT_ANSWER_ACTION = (
-    'You have selected the `answer` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `answer` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "answer", "text": <answer_text>}}\n'
     'Guidelines:\n'
     '- "text" should be a clear, concise, and direct answer to the user\'s question or request.\n'
@@ -113,7 +113,7 @@ PROMPT_ANSWER_ACTION = (
 )
 
 PROMPT_STATUS_ACTION = (
-    'You have selected the `status` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `status` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "status", "goal_status": <complete|infeasible>}}\n'
     'Guidelines:\n'
     '- Use "complete" if the task is done, "infeasible" if it cannot be done.\n'
@@ -126,7 +126,7 @@ PROMPT_STATUS_ACTION = (
 )
 
 PROMPT_KEYBOARD_ENTER_ACTION = (
-    'You have selected the `keyboard_enter` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `keyboard_enter` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "keyboard_enter"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
@@ -137,7 +137,7 @@ PROMPT_KEYBOARD_ENTER_ACTION = (
 )
 
 PROMPT_NAVIGATE_HOME_ACTION = (
-    'You have selected the `navigate_home` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `navigate_home` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "navigate_home"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
@@ -159,7 +159,7 @@ PROMPT_NAVIGATE_BACK_ACTION = (
 )
 
 PROMPT_SCROLL_ACTION = (
-    'You have selected the `scroll` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `scroll` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "scroll", "direction": <up|down|left|right>, "index": <optional_target_index>}}\n'
     'Guidelines:\n'
     '- "direction" must be one of up, down, left, right.\n'
@@ -175,7 +175,7 @@ PROMPT_SCROLL_ACTION = (
 )
 
 PROMPT_OPEN_APP_ACTION = (
-        'You have selected the `open_app` action. {action_select_reason} Now construct the JSON for this action.\n'
+        'You have selected the `open_app` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
         'Format: {{"action_type": "open_app", "app_name": <name>}}\n'
         'Guidelines:\n'
         '- Try to find explicitly mentioned app name from the task description, if there is none, open the app that is the most sensible.'
@@ -193,7 +193,7 @@ PROMPT_OPEN_APP_ACTION = (
 )
 
 PROMPT_WAIT_ACTION = (
-    'You have selected the `wait` action. {action_select_reason} Now construct the JSON for this action.\n'
+    'You have selected the `wait` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
     'Format: {{"action_type": "wait"}}\n'
     'Guidelines:\n'
     '- No extra keys or fields.\n'
@@ -207,9 +207,9 @@ ACTION_EXECUTION_PROMPT_TEMPLATE = (
 
          '\nThe current user goal/request is: {goal}'
         + '{prompt_for_selected_action}'
+        + '\n\nHere is a history of what you have done so far:\n{history}'
         + '\n\nHere is a list of descriptions for some UI elements on the current'
           ' screen:\n{ui_elements_description}\n'
-        + '\n\nHere is a history of what you have done so far:\n{history}'
         # + '{additional_guidelines}'
         + 'Now output the action details in the correct JSON format,'
           ' following the reason why you do that. Your answer should look like:\n'
