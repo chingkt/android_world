@@ -79,7 +79,7 @@ class UI_Elem_Description_Generator:
 
         return simplified_elements
 
-    def generate_general_ui_prompt(self,ui_elements: list[dict]) -> str:
+    def generate_general_ui_prompt(self,ui_elements: list[dict], goal: str) -> str:
         """
         构建用于 LLM 分析 UI 屏幕结构的 prompt。
 
@@ -93,7 +93,14 @@ class UI_Elem_Description_Generator:
         #
         # JSON:"""
 
-        prompt_header = """Summarize the visible structure of the screen based on this JSON. Focus only on top-level layout, scrollable components, and repeated elements. Do not describe every element in detail.
+        prompt_header = f"""
+        The goal of the current UI task is {goal}.
+        You are an expert in analyzing mobile UI structures.
+        The following is a list of UI elements on the screen, represented in JSON format.
+        Your task is to summarize the visible structure of the screen based on this JSON.
+        Focus only on top-level layout, scrollable components, and repeated elements.
+        Identify key elements and describe their possible usage that could be related to the task goal.
+        Do not describe every element in detail.
 
         JSON:"""
 
@@ -184,7 +191,7 @@ class UI_Elem_Description_Generator:
             filtered_ui_elements)
 
 
-        prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info)
+        prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info, goal)
         llm = infer.GeminiGcpWrapper(model_name)
         summary, _, _ = llm.predict(prompt)
         print("Summary generated for UI Elements: " + summary)

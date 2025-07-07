@@ -207,9 +207,9 @@ ACTION_EXECUTION_PROMPT_TEMPLATE = (
 
          '\nThe current user goal/request is: {goal}'
         + '{prompt_for_selected_action}'
-        + '\n\nHere is a history of what you have done so far:\n{history}'
         + '\n\nHere is a list of descriptions for some UI elements on the current'
           ' screen:\n{ui_elements_description}\n'
+        + '\n\nHere is a history of what you have done so far:\n{history}'
         # + '{additional_guidelines}'
         + 'Now output the action details in the correct JSON format,'
           ' following the reason why you do that. Your answer should look like:\n'

@@ -260,7 +260,7 @@ SUMMARIZATION_PROMPT_TEMPLATE_NEW = (
           '1. "summary": A short one-line summary of the step (what was done, why, and the outcome).\n'
           '2. "status": Either "successful" or "failed", based on whether the action had the intended effect.\n'
           '3. "reason": A short justification of the status — analyze whether the UI changed in a way that confirms or contradicts the success of the action. Be critical, and use evidence from before/after UI and the button index.\n'
-          '4. "status_detail": A short tag describing the specific type of result (e.g., "ui_not_ready", "click_no_effect", "partial_success", "wrong_view", "success_full", "success_input").\n'
+          '4. "status_detail": A short tag describing the specific type of result (e.g., "ui_not_ready", "click_no_effect", "partial_success", "wrong_view", "successful", "success_input").\n'
           '5. "ui_changed": A boolean flag indicating whether the UI elements or structure changed after the action.\n'
           '6. "new_knowledge": A short string describing what new, **verifiable and atomic** knowledge was gained from this step. This may include:\n'
           '   - confirmed interactions that work (e.g., "long-pressing a file shows file actions")\n'
@@ -479,8 +479,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         )
         # Only save the screenshot for result visualization.
         step_data['before_screenshot'] = state.pixels.copy()
-        step_data['before_element_list'] = ui_elements
-
+        step_data['before_element_list'] = before_element_list
         memory_list = [
             step_info['memory']
             for step_info in self.history if "memory" in step_info and step_info['memory'] != "None"
@@ -687,7 +686,6 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         # 3. 解析 JSON
         summary_dict = json.loads(json_clean)
 
-        print(summary_dict)
 
         if is_safe == False:  # pylint: disable=singleton-comparison
             #  is_safe could be None
