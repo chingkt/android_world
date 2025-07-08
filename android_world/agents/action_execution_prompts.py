@@ -21,6 +21,7 @@ PROMPT_CLICK_ACTION = (
     '- The agent should simulate a real tap: the click will be performed at the center of the element\'s bounding box.\n'
     '- Do not click on elements that are disabled, hidden, or overlapped by other UI elements.\n'
     '- Do not click on decorative or non-interactive elements (such as icons or separators).\n'
+    '- Do not use x y coordinates, only use the "index" key.\n'
     '- If multiple elements have similar text, use the index that matches the intended target in the UI list.\n'
     '- Only include the "index" key, do not add extra fields.\n'
     'Common mistakes:\n'

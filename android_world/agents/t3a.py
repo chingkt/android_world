@@ -471,6 +471,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         logical_screen_size = self.env.logical_screen_size
 
         ui_elements = state.ui_elements
+        print(f'UI elements: {ui_elements}')
         before_element_list = _generate_ui_elements_description_list_full(
             ui_elements,
             logical_screen_size,

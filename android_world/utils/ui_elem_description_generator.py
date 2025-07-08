@@ -67,8 +67,10 @@ class UI_Elem_Description_Generator:
                 "clickable": elem.is_clickable,
                 "long_clickable": elem.is_long_clickable,
                 "editable": elem.is_editable,
+                "checked": elem.is_checked,
                 "scrollable": elem.is_scrollable,
                 "visible": elem.is_visible,
+                "enabled": elem.is_enabled,
                 "resource_name": elem.resource_name,
                 "position": bbox,
             }
@@ -99,12 +101,13 @@ class UI_Elem_Description_Generator:
         The following is a list of UI elements on the screen, represented in JSON format.
         Your task is to summarize the visible structure of the screen based on this JSON.
         Focus only on top-level layout, scrollable components, and repeated elements.
-        Identify key elements and describe their possible usage that could be related to the task goal.
+        Identify key elements, then focus on analysing their *json attributes* like "checked" and so on. At the end, describe their possible usage that could be related to the task goal.
         Do not describe every element in detail.
 
         JSON:"""
 
         json_content = json.dumps(ui_elements, indent=2, ensure_ascii=False)
+        print("Json content", json_content)
         return f"{prompt_header}\n```\n{json_content}\n```"
 
     def filter_out_invalid_ui_elements(
