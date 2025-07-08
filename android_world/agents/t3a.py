@@ -78,8 +78,10 @@ PROMPT_PREFIX_NO_FORMAT = (
     'You are an agent who can operate an Android phone on behalf of a user.'
     " Based on user's goal/request, you may\n"
     '- Open an app: action_type: open_app\n'
-    'This action is always the first action you should  take, as it'
+    'This action is always the first action you should take, as it'
     ' is usually necessary to open an app before performing any other actions.\n'
+    'If the task description mentions a specific app, you should open that app directly, otherwise'
+    ' you can open the app that is most relevant to the task.\n'
     '- Answer back if the request/goal is a question (or a chat message), like'
     ' user asks "What is my schedule for today?".\n'
     '- Complete some tasks described in the requests/goals by performing'
@@ -181,6 +183,9 @@ GUIDANCE = (
     ' actions that you can perform. You can click on it to reveal more'
     ' options, then select the action you want to perform from the revealed'
     ' options.\n'
+    '- Before marking a task as complete, you must **carefully verify that all required sub-goals or listed items in the user instruction have been completed**.'
+    'For example, if the task is "delete expenses A, B, and C", do NOT mark as complete until all three have been deleted. Review the action history and current screen to confirm none are missed. Failing to satisfy all subgoals will result in a failed task.'
+    '- If a UI element appears to confirm or proceed based on user input, you should consider clicking it to advance the flow, even if it is not explicitly marked as clickable.'
 )
 
 ACTION_SELECTION_PROMPT_TEMPLATE = (
@@ -210,10 +215,21 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
           'Action: answer\n\n'
           'For the details of the action, we do it in the next step, so'
           ' you can just use the action_type in your answer.\n'
-         + '\n\nBefore you decide, ask yourself:'
+        + '\n\nBefore you decide, ask yourself:'
         + '\n- What app or interface is **most directly** related to the goal?'
         + '\n- Have you tried opening that app via `open_app()`? If not, consider doing that.'
           '- Avoid clicking on UI elements hoping to reach a goal if a direct app invocation is possible.\n'
+          'Before selecting your next action, assess your current state:'
+
+          '- What screen are you currently on?'
+          '- Is this the intended screen for completing the user goal?'
+          '- Has the last action led to a state transition?'
+          '- Are there any confirmation or suggestion elements that require a click to proceed?'
+          '- Are you already in the final stage of the task, or still in a setup step?'
+
+          'Use this state assessment to avoid premature actions (e.g., typing message before recipient is confirmed) or redundant steps.'
+          'When uncertain, first examine the current UI elements and compare with the previous state. If key elements are missing, try to come up with a more reliable action instead of guessing.'
+
           'Your Answer:\n'
 )
 
@@ -287,6 +303,14 @@ SUMMARIZATION_PROMPT_TEMPLATE_NEW = (
           '- Use both the visual and structural cues to reason about whether a meaningful transition happened.\n'
           '- Do NOT infer or speculate — if it\'s unclear whether something new was revealed, return "None".\n'
           '- Think of each value in "new_knowledge" as a factual entry that could be stored in memory and used for future decision-making.\n\n'
+
+          '- For **scroll** actions, be extra critical in evaluating whether the UI actually changed:'
+          ' - If the list/table/grid **looks identical** before and after the scroll, set `"status": "failed"` and `"status_detail": "scroll_no_effect"`.'
+          '- If the last visible element **remains the same**, it likely means the scroll hit the **end of the list**. Mark as:'
+          '- `"status": "successful"`, `"status_detail": "scroll_end"`, and `"new_knowledge": "scrolling downward on [list/view] reaches end at item X"`.'
+          ' - If the visible content **moves upward/downward** and new items appear, then it is s likely a **successful scroll**.'
+          '- Always compare `before_elements` and `after_elements` carefully: check indexes, order, visibility, and total number of elements.'
+          '- If you are uncertain whether the scroll worked due to incomplete UI info, err on the side of `"status": "failed"` and `"new_knowledge": "None"`.'
 
           'Return only the JSON object below, with all keys included:\n\n'
           '```\n'
@@ -471,7 +495,6 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         logical_screen_size = self.env.logical_screen_size
 
         ui_elements = state.ui_elements
-        print(f'UI elements: {ui_elements}')
         before_element_list = _generate_ui_elements_description_list_full(
             ui_elements,
             logical_screen_size,
@@ -480,7 +503,8 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         )
         # Only save the screenshot for result visualization.
         step_data['before_screenshot'] = state.pixels.copy()
-        step_data['before_element_list'] = before_element_list
+        step_data['before_element_list'] = ui_elements
+
         memory_list = [
             step_info['memory']
             for step_info in self.history if "memory" in step_info and step_info['memory'] != "None"
@@ -499,7 +523,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         )
         step_data['action_selection_prompt'] = action_selection_prompt
 
-        start_time= time.time()
+        start_time = time.time()
         action_output, is_safe, raw_response = self.llm.predict(
             action_selection_prompt,
         )
@@ -548,6 +572,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             )
 
         action_detail_prompt = ACTION_KEY_TO_PROMPT[selected_action]
+
         action_execution_prompt = ACTION_EXECUTION_PROMPT_TEMPLATE.format(
             prompt_for_selected_action=action_detail_prompt.format(action_select_reason=reason),
             goal=goal,
@@ -560,7 +585,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         )
         step_data['action_execution_prompt'] = action_execution_prompt
 
-        start_time= time.time()
+        start_time = time.time()
         action_output, is_safe, raw_response = self.llm.predict(
             action_execution_prompt,
         )
@@ -624,14 +649,6 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         if converted_action.action_type == 'answer':
             print('Agent answered with: ' + converted_action.text)
-            step_data['summary'] = (
-                'Agent answered with: ' + converted_action.text
-            )
-            self.history.append(step_data)
-            return base_agent.AgentInteractionResult(
-                False,
-                step_data,
-            )
 
         try:
             self.env.execute_action(converted_action)
@@ -680,7 +697,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             before_element_list,
             after_element_list,
         )
-        start_time= time.time()
+        start_time = time.time()
         summary, is_safe, raw_response = self.llm.predict(
             summary_prompt,
         )
