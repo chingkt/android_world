@@ -5,20 +5,24 @@ from android_world.env import representation_utils
 from android_world.agents import m3a_utils
 from android_world.agents import infer
 
-
 LOG_FILE_PATH = r'E:\Desktop\android_world\tmp\ui_log.txt'  # 可以改成你想要的路径
+
 
 # 初始化：每次运行先清空文件（只运行一次即可）
 def init_log_file():
     with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
         f.write('')  # 清空内容
 
+
 # 包装函数：像 print 一样使用
 def log_to_file(*args, sep=' ', end='\n'):
     message = sep.join(str(arg) for arg in args) + end
     with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
         f.write(message)
+
+
 init_log_file()
+
 
 class UI_Elem_Description_Generator:
     """
@@ -82,7 +86,7 @@ class UI_Elem_Description_Generator:
 
         return simplified_elements
 
-    def generate_general_ui_prompt(self,ui_elements: list[dict], goal: str) -> str:
+    def generate_general_ui_prompt(self, ui_elements: list[dict], goal: str) -> str:
         """
         构建用于 LLM 分析 UI 屏幕结构的 prompt。
 
@@ -188,31 +192,17 @@ class UI_Elem_Description_Generator:
         """
         Generates a description of UI elements in a list format.
         """
-        filtered_ui_elements = UI_Elem_Description_Generator(model_name).filter_out_useless_ui_elements(
-            ui_elements)
-
-        tree_info = UI_Elem_Description_Generator(model_name).convert_ui_elements_to_pure_json(
-            filtered_ui_elements)
-
-
-        prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info, goal)
+        prompt = UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(ui_elements,
+                                                                                      goal)
         llm = infer.GeminiGcpWrapper(model_name)
         summary, _, _ = llm.predict(prompt)
         print("Summary generated for UI Elements: " + summary)
 
-        # # 生成可读的描述
-        # tree_info = UI_Elem_Description_Generator().convert_ui_elements_readable(
-        #     tree_info)
-
-        # tree_info = ''
-        # for original_index, ui_element in filtered_ui_elements:
-        #     tree_info += f'UI element {original_index}: {str(ui_element)}\n'
-        # log_to_file("UI elements:")
         result_str = f"""## UI Summary
         {summary.strip()}
 
         ## UI Elements (JSON)
-        {json.dumps(tree_info, indent=2, ensure_ascii=False)}
+        {json.dumps(ui_elements, indent=2, ensure_ascii=False)}
         """
 
         # 日志打印或写入文件
