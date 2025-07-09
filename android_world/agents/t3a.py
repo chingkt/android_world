@@ -495,11 +495,9 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         logical_screen_size = self.env.logical_screen_size
 
         ui_elements = state.ui_elements
-        before_element_list = _generate_ui_elements_description_list_full(
+        before_element_list = generate_ui_elements_description_list_full(
             ui_elements,
             logical_screen_size,
-            goal,
-            model_name=self.llm.model_name,
         )
         # Only save the screenshot for result visualization.
         step_data['before_screenshot'] = state.pixels.copy()
@@ -679,11 +677,9 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         state = self.get_post_transition_state()
         ui_elements = state.ui_elements
 
-        after_element_list = _generate_ui_elements_description_list_full(
+        after_element_list = generate_ui_elements_description_list_full(
             ui_elements,
             self.env.logical_screen_size,
-            goal,
-            model_name=self.llm.model_name,
         )
 
         # Save screenshot only for result visualization.
