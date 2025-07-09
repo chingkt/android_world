@@ -196,8 +196,7 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
           '\n- Were any actions repeated without effect?'
           '\n- Did similar actions succeed or fail before?'
           '\n- Can you reuse or revise past successful strategies, or avoid known failure patterns?\n'
-        + '\nHere is a list of confirmed facts you have learned during interaction (your memory):\n{memory}'
-        + '\n\nPlease reflect on the above history and memory. Try to summarize what you’ve already tried, what has worked, and what hasn’t. Use that to inform your next action.'
+        + '\n\nPlease reflect on the above history. Try to summarize what you’ve already tried, what has worked, and what hasn’t. Use that to inform your next action.'
           ' screen:\n{ui_elements_description}\n'
         + GUIDANCE
         + '{additional_guidelines}'
@@ -262,69 +261,6 @@ SUMMARIZATION_PROMPT_TEMPLATE = (
           'Summary of this step: '
 )
 
-SUMMARIZATION_PROMPT_TEMPLATE_NEW = (
-        PROMPT_PREFIX_NO_FORMAT
-        + '\nThe (overall) user goal/request is: {goal}\n'
-          'Now I want you to summarize the latest step based on the action you '
-          'picked, the reason behind it, and the descriptions for the before and after '
-          'screenshots (representing the screen state before and after the action).\n\n'
-          'Here is the description for the BEFORE screenshot:\n{before_elements}\n\n'
-          'Here is the description for the AFTER screenshot:\n{after_elements}\n\n'
-          'This is the action you picked: {action}\n'
-          'Based on the reason: {reason}\n\n'
-          'Your task is to generate a structured JSON object with the following fields:\n'
-          '1. "summary": A short one-line summary of the step (what was done, why, and the outcome).\n'
-          '2. "status": Either "successful" or "failed", based on whether the action had the intended effect.\n'
-          '3. "reason": A short justification of the status — analyze whether the UI changed in a way that confirms or contradicts the success of the action. Be critical, and use evidence from before/after UI and the button index.\n'
-          '4. "status_detail": A short tag describing the specific type of result (e.g., "ui_not_ready", "click_no_effect", "partial_success", "wrong_view", "successful", "success_input").\n'
-          '5. "ui_changed": A boolean flag indicating whether the UI elements or structure changed after the action.\n'
-          '6. "new_knowledge": A short string describing what new, **verifiable and atomic** knowledge was gained from this step. This may include:\n'
-          '   - confirmed interactions that work (e.g., "long-pressing a file shows file actions")\n'
-          '   - confirmed failures (e.g., "clicking Chrome in open-with dialog does not launch the file")\n'
-          '   - redundant or inert actions (e.g., "clicking task.html again has no effect")\n\n'
-          'This field should describe facts about the UI **state or behavior**, not abstract page names or vague screen descriptions.\n'
-          'Only include this field if the UI clearly confirms a new and reusable behavior, constraint, or failure pattern.\n'
-          '**You should only set "new_knowledge" to "None" if you are genuinely uncertain or if the UI provides no clear evidence of a new interaction pattern, success, or failure. '
-          'If the action produced a visible result — even a redundant or failed one — you should describe what was learned.**\n\n'
-
-          '⚠️ Note: Even failed or redundant actions can yield valuable new knowledge, such as:\n'
-          '- "Clicking the same button again has no effect"\n'
-          '- "Typing into a disabled field does not update its content"\n'
-          'As long as the UI **clearly confirms the outcome**, such failure cases should be included as new knowledge.\n\n'
-
-          'Some helpful tips:\n'
-          '- Be concise and critical.\n'
-          '- Use screen changes (e.g., UI element at clicked index disappears, screen layout changes, expected labels appear/disappear) to infer status.\n'
-          '- If nothing changed after a click, it likely failed — unless the change is expected to be delayed.\n'
-          '- For actions like text input, success can be inferred if the field’s value has changed.\n'
-          '- For clicks, compare structure and visibility of the target element and downstream UI.\n'
-          '- Try to infer the "state" before and after this action (e.g., in file manager, in Chrome, in share sheet). Each action should be treated as an atomic operation transitioning between UI states.\n'
-          '- If the state after the action is identical to a previously seen failed state, consider this step redundant or unproductive.\n'
-          '- Use both the visual and structural cues to reason about whether a meaningful transition happened.\n'
-          '- Do NOT infer or speculate — if it\'s unclear whether something new was revealed, return "None".\n'
-          '- Think of each value in "new_knowledge" as a factual entry that could be stored in memory and used for future decision-making.\n\n'
-
-          '- For **scroll** actions, be extra critical in evaluating whether the UI actually changed:'
-          ' - If the list/table/grid **looks identical** before and after the scroll, set `"status": "failed"` and `"status_detail": "scroll_no_effect"`.'
-          '- If the last visible element **remains the same**, it likely means the scroll hit the **end of the list**. Mark as:'
-          '- `"status": "successful"`, `"status_detail": "scroll_end"`, and `"new_knowledge": "scrolling downward on [list/view] reaches end at item X"`.'
-          ' - If the visible content **moves upward/downward** and new items appear, then it is s likely a **successful scroll**.'
-          '- Always compare `before_elements` and `after_elements` carefully: check indexes, order, visibility, and total number of elements.'
-          '- If you are uncertain whether the scroll worked due to incomplete UI info, err on the side of `"status": "failed"` and `"new_knowledge": "None"`.'
-
-          'Return only the JSON object below, with all keys included:\n\n'
-          '```\n'
-          '{{\n'
-          '  "summary": "...",\n'
-          '  "status": "successful" or "failed",\n'
-          '  "reason": "...",\n'
-          '  "status_detail": "...",\n'
-          '  "ui_changed": true or false,\n'
-          '  "new_knowledge": "..." or "None"\n'
-          '}}\n'
-          '```\n'
-)
-
 
 def generate_ui_elements_description_list_full(
         ui_elements: list[representation_utils.UIElement],
@@ -376,7 +312,6 @@ def _generate_ui_elements_description_list_full(
 def _action_selection_prompt(
         goal: str,
         history: list[str],
-        memory: list[str],
         ui_elements_description: str,
         additional_guidelines: list[str] | None = None,
 ) -> str:
@@ -396,11 +331,6 @@ def _action_selection_prompt(
     else:
         history = 'You just started, no action has been performed yet.'
 
-    if memory:
-        memory = '\n'.join(memory)
-    else:
-        memory = 'You have no memory yet.'
-
     extra_guidelines = ''
     if additional_guidelines:
         extra_guidelines = 'For The Current Task:\n'
@@ -409,7 +339,6 @@ def _action_selection_prompt(
 
     return ACTION_SELECTION_PROMPT_TEMPLATE.format(
         history=history,
-        memory=memory,
         goal=goal,
         ui_elements_description=ui_elements_description
         if ui_elements_description
@@ -437,7 +366,7 @@ def _summarize_prompt(
     Returns:
       The text prompt for summarization that will be sent to gpt4v.
     """
-    return SUMMARIZATION_PROMPT_TEMPLATE_NEW.format(
+    return SUMMARIZATION_PROMPT_TEMPLATE.format(
         goal=goal,
         action=action,
         reason=reason,
@@ -505,11 +434,6 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         step_data['before_screenshot'] = state.pixels.copy()
         step_data['before_element_list'] = ui_elements
 
-        memory_list = [
-            step_info['memory']
-            for step_info in self.history if "memory" in step_info and step_info['memory'] != "None"
-        ]
-        print("Total memory: ", memory_list)
 
         action_selection_prompt = _action_selection_prompt(
             goal,
@@ -517,7 +441,6 @@ class T3A(base_agent.EnvironmentInteractingAgent):
                 'Step ' + str(i + 1) + ': ' + step_info['summary']
                 for i, step_info in enumerate(self.history)
             ],
-            memory_list,
             before_element_list,
             self.additional_guidelines,
         )
@@ -703,35 +626,17 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         )
         print(f'Summarization took: {time.time() - start_time:.2f} seconds')
 
-        import json
-        json_part = '\n'.join(summary.splitlines()[1:])
-
-        # 2. 去除结尾的 ```
-        json_clean = json_part.strip('`').strip()
-
-        # 3. 解析 JSON
-        summary_dict = json.loads(json_clean)
-
-
         if is_safe == False:  # pylint: disable=singleton-comparison
             #  is_safe could be None
             summary = """Summary triggered LLM safety classifier."""
-        else:
-            new_learning = summary_dict.get('new_knowledge', 'None')
-            del summary_dict['new_knowledge']
-            summary_text = json.dumps(summary_dict, indent=2, ensure_ascii=False)
-            step_data['memory'] = new_learning
-            print('Summary: ' + summary_text)
-            print('Knowledge learned: ' + new_learning)
-            pass
 
         step_data['summary_prompt'] = summary_prompt
         step_data['summary'] = (
-            f'Action selected: {action_detail}. {summary_text}'
+            f'Action selected: {action_detail}. {summary}'
             if raw_response
             else 'Error calling LLM in summerization phase.'
         )
-
+        print('Summary: ' + summary)
         step_data['summary_raw_response'] = raw_response
 
         self.history.append(step_data)
