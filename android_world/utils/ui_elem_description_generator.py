@@ -195,10 +195,10 @@ class UI_Elem_Description_Generator:
             filtered_ui_elements)
 
 
-        prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info, goal)
-        llm = infer.GeminiGcpWrapper(model_name)
-        summary, _, _ = llm.predict(prompt)
-        print("Summary generated for UI Elements: " + summary)
+        # prompt=UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(tree_info, goal)
+        # llm = infer.GeminiGcpWrapper(model_name)
+        # summary, _, _ = llm.predict(prompt)
+        # print("Summary generated for UI Elements: " + summary)
 
         # # 生成可读的描述
         # tree_info = UI_Elem_Description_Generator().convert_ui_elements_readable(
@@ -208,9 +208,7 @@ class UI_Elem_Description_Generator:
         # for original_index, ui_element in filtered_ui_elements:
         #     tree_info += f'UI element {original_index}: {str(ui_element)}\n'
         # log_to_file("UI elements:")
-        result_str = f"""## UI Summary
-        {summary.strip()}
-
+        result_str = f"""
         ## UI Elements (JSON)
         {json.dumps(tree_info, indent=2, ensure_ascii=False)}
         """
