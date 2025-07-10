@@ -192,6 +192,8 @@ class UI_Elem_Description_Generator:
         """
         Generates a description of UI elements in a list format.
         """
+        # Convert UIElement into str
+        ui_elements=json.dumps([str(elem) for elem in ui_elements], indent=2, ensure_ascii=False)
         prompt = UI_Elem_Description_Generator(model_name).generate_general_ui_prompt(ui_elements,
                                                                                       goal)
         llm = infer.GeminiGcpWrapper(model_name)
