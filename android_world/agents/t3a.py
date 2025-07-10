@@ -24,8 +24,7 @@ from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
 from android_world.utils.ui_elem_description_generator import UI_Elem_Description_Generator
-from android_world.agents.action_execution_prompts import ACTION_KEY_TO_PROMPT, \
-    ACTION_EXECUTION_PROMPT_TEMPLATE
+
 
 PROMPT_PREFIX = (
     'You are an agent who can operate an Android phone on behalf of a user.'
@@ -61,6 +60,13 @@ PROMPT_PREFIX = (
     ' the enter, so no need to click on the target field to start:'
     ' `{{"action_type": "input_text", "text": <text_input>, "index":'
     ' <target_index>}}`\n'
+    '- Fill out a form by typing text into multiple editable text fields'
+    '(each field specified by its index or coordinates and the text to input).'
+    'For each field, the agent will click the field (if index or coordinates are provided),'
+    'type the text, and press enter. You do not need to click the fields separately'
+    'before typing. Example format:\n `{{"action_type": "fill_form",'
+    '"form": [{{"text": <text_input_1>, "index": <target_index_1>}},'
+    '{{"text": <text_input_2>, "index": <target_index_2>}}]}}`\n'
     '- Press the Enter key: `{{"action_type": "keyboard_enter"}}`\n'
     '- Navigate to the home screen: `{{"action_type": "navigate_home"}}`\n'
     '- Navigate back: `{{"action_type": "navigate_back"}}`\n'
@@ -74,42 +80,6 @@ PROMPT_PREFIX = (
     '- Wait for the screen to update: `{{"action_type": "wait"}}`\n'
 )
 
-PROMPT_PREFIX_NO_FORMAT = (
-    'You are an agent who can operate an Android phone on behalf of a user.'
-    " Based on user's goal/request, you may\n"
-    '- Open an app: action_type: open_app\n'
-    'This action is always the first action you should take, as it'
-    ' is usually necessary to open an app before performing any other actions.\n'
-    'If the task description mentions a specific app, you should open that app directly, otherwise'
-    ' you can open the app that is most relevant to the task.\n'
-    '- Answer back if the request/goal is a question (or a chat message), like'
-    ' user asks "What is my schedule for today?".\n'
-    '- Complete some tasks described in the requests/goals by performing'
-    ' actions (step by step) on the phone.\n\n'
-    'When given a user request, you will try to complete it step by step. At'
-    ' each step, a list of descriptions for most UI elements on the'
-    ' current screen will be given to you (each element can be specified by an'
-    ' index), together with a history of what you have done in previous steps.'
-    ' Based on these pieces of information and the goal, you must choose to'
-    ' perform one of the action in the following list (action description'
-    ' followed by the action_type) by outputing the action_type in your answer.\n'
-    '- If you think the task has been completed, finish the task by using the'
-    ' status action with complete as goal_status: action_type: status\n'
-    '- If you think the task is not'
-    " feasible (including cases like you don't have enough information or can"
-    ' not perform some necessary actions), finish by using the status action'
-    ' with infeasible as goal_status: action_type: status\n'
-    "- Only if you think user's question can be completely answered, use: action_type: answer\n"
-    '- Click/tap on a UI element: action_type: click\n'
-    '- Long press on a UI element: action_type: long_press\n'
-    '- Type text into an editable text field: action_type: input_text\n'
-    '- Fill out a form by typing text into multiple editable text fields: action_type: fill_form\n'
-    '- Press the Enter key: action_type: keyboard_enter\n'
-    '- Navigate to the home screen: action_type: navigate_home\n'
-    '- Navigate back: action_type: navigate_back\n'
-    '- Scroll the screen or a scrollable UI element: action_type: scroll\n'
-    '- Wait for the screen to update: action_type: wait\n'
-)
 
 GUIDANCE = (
     'Here are some useful guidelines you need to follow:\n'
@@ -139,7 +109,7 @@ GUIDANCE = (
     ' something (including password) instead of clicking characters on the'
     ' keyboard one by one. Sometimes there is some default text in the text'
     ' field you want to type in, remember to delete them before typing.\n'
-    '- For `click`, `long_press` and `input_text`, the index parameter you'
+    '- For `click`, `long_press`, `input_text` and `fill_form`, the index parameter you'
     ' pick must be VISIBLE in the screenshot and also in the UI element'
     ' list given to you (some elements in the list may NOT be visible on'
     ' the screen so you can not interact with them).\n'
@@ -150,6 +120,13 @@ GUIDANCE = (
     ' bottom, the `scroll` direction should be set to "down". It has been'
     ' observed that you have difficulties in choosing the correct direction, so'
     ' if one does not work, try the opposite as well.\n'
+    '- Use the `fill_form` action whenever you want to fill out multiple text'
+    'fields. For each field, specify the text to input and either'
+    'the index or coordinates of the field. The agent will automatically click'
+    'the field (if index or coordinates are provided), type the text, and press'
+    'enter for each field—there is no need to click the fields separately before'
+    'typing. Make sure each field in the form is specified as a dictionary with'
+    'a "text" key and either an "index" or both "x" and "y" keys.\n'
     'Text Related Operations\n'
     '- Normally to select some text on the screen: <i> Enter text selection'
     ' mode by long pressing the area where the text is, then some of the words'
@@ -178,18 +155,10 @@ GUIDANCE = (
     ' list will appear. This usually indicating this is a enum field and you'
     ' should try to select the best match by clicking the corresponding one'
     ' in the list.\n'
-    '- When you cannot find any suitable action type, check if there is a UI element called `More options`'
-    ', which usually contains more'
-    ' actions that you can perform. You can click on it to reveal more'
-    ' options, then select the action you want to perform from the revealed'
-    ' options.\n'
-    '- Before marking a task as complete, you must **carefully verify that all required sub-goals or listed items in the user instruction have been completed**.'
-    'For example, if the task is "delete expenses A, B, and C", do NOT mark as complete until all three have been deleted. Review the action history and current screen to confirm none are missed. Failing to satisfy all subgoals will result in a failed task.'
-    '- If a UI element appears to confirm or proceed based on user input, you should consider clicking it to advance the flow, even if it is not explicitly marked as clickable.'
 )
 
 ACTION_SELECTION_PROMPT_TEMPLATE = (
-        PROMPT_PREFIX_NO_FORMAT
+        PROMPT_PREFIX
         + '\nThe current user goal/request is: {goal}'
         + '\n\nHere is a history of what you have done so far:\n{history}'
         + '\n\nPay special attention to the last 3-5 steps in the history:'
@@ -201,20 +170,9 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
           ' screen:\n{ui_elements_description}\n'
         + GUIDANCE
         + '{additional_guidelines}'
-        + '\n\nNow select the name of an action from the above list,'
-          ' following the reason why you do that. Your answer should look like:\n'
-          'Reason: ...\nAction: <action_type>\n\n'
-          'For example, if you want to click on the first UI element, your answer'
-          ' should look like:\n'
-          'Reason: I want to click on the first UI element because it is a button'
-          ' that I need to interact with.\n'
-          'Action: click\n\n'
-          'If you want to answer a question, your answer should look like:\n'
-          'Reason: I want to answer the question because it is a chat message'
-          ' that the user asked.\n'
-          'Action: answer\n\n'
-          'For the details of the action, we do it in the next step, so'
-          ' you can just use the action_type in your answer.\n'
+        + '\n\nNow output an action from the above list in the correct JSON format,'
+        ' following the reason why you do that. Your answer should look like:\n'
+        'Reason: ...\nAction: {{"action_type":...}}\n\n'
         + '\n\nBefore you decide, ask yourself:'
         + '\n- What app or interface is **most directly** related to the goal?'
         + '\n- Have you tried opening that app via `open_app()`? If not, consider doing that.'
@@ -234,7 +192,7 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
 )
 
 SUMMARIZATION_PROMPT_TEMPLATE = (
-        PROMPT_PREFIX_NO_FORMAT
+        PROMPT_PREFIX
         + '\nThe (overall) user goal/request is:{goal}\n'
           'Now I want you to summerize the latest step based on the action you'
           ' pick with the reason and descriptions for the before and after (the'
@@ -263,7 +221,7 @@ SUMMARIZATION_PROMPT_TEMPLATE = (
 )
 
 SUMMARIZATION_PROMPT_TEMPLATE_NEW = (
-        PROMPT_PREFIX_NO_FORMAT
+        PROMPT_PREFIX
         + '\nThe (overall) user goal/request is: {goal}\n'
           'Now I want you to summarize the latest step based on the action you '
           'picked, the reason behind it, and the descriptions for the before and after '
@@ -481,8 +439,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
             'after_screenshot': None,
             'before_element_list': None,
             'after_element_list': None,
-            'action_selection_prompt': None,
-            'action_execution_prompt': None,
+            'action_prompt': None,
             'action_output': None,
             'action_raw_response': None,
             'summary_prompt': None,
@@ -511,7 +468,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         ]
         print("Total memory: ", memory_list)
 
-        action_selection_prompt = _action_selection_prompt(
+        action_prompt = _action_selection_prompt(
             goal,
             [
                 'Step ' + str(i + 1) + ': ' + step_info['summary']
@@ -521,13 +478,12 @@ class T3A(base_agent.EnvironmentInteractingAgent):
             before_element_list,
             self.additional_guidelines,
         )
-        step_data['action_selection_prompt'] = action_selection_prompt
 
-        start_time = time.time()
+        step_data['action_prompt'] = action_prompt
         action_output, is_safe, raw_response = self.llm.predict(
-            action_selection_prompt,
+            action_prompt,
         )
-        print(f"Action selection took: {time.time() - start_time:.2f} seconds")
+        print('action output: ' + action_output)
 
         if is_safe == False:  # pylint: disable=singleton-comparison
             #  is_safe could be None
@@ -537,13 +493,14 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         if not raw_response:
             raise RuntimeError('Error calling LLM in action selection phase.')
 
+        step_data['action_output'] = action_output
         step_data['action_raw_response'] = raw_response
 
-        reason, selected_action = m3a_utils.parse_reason_action_output(action_output)
+        reason, action = m3a_utils.parse_reason_action_output(action_output)
 
         # If the output is not in the right format, add it to step summary which
         # will be passed to next step and return.
-        if (not reason) or (not selected_action):
+        if (not reason) or (not action):
             print('Action prompt output is not in the correct format.')
             step_data['summary'] = (
                 'Output for action selection is not in the correct format, so no'
@@ -556,51 +513,14 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
 
-        print('Selected Action: ' + selected_action)
+        print('Action: ' + action)
         print('Reason: ' + reason)
-        if selected_action not in json_action._ACTION_TYPES:
-            print('Action not in the action list.')
-            step_data['summary'] = (
-                'The action selected is not in the action list, so no action is'
-                ' performed.'
-            )
-            self.history.append(step_data)
-
-            return base_agent.AgentInteractionResult(
-                False,
-                step_data,
-            )
-
-        action_detail_prompt = ACTION_KEY_TO_PROMPT[selected_action]
-
-        action_execution_prompt = ACTION_EXECUTION_PROMPT_TEMPLATE.format(
-            prompt_for_selected_action=action_detail_prompt.format(action_select_reason=reason),
-            goal=goal,
-            history=[
-                'Step ' + str(i + 1) + ': ' + step_info['summary']
-                for i, step_info in enumerate(self.history)
-            ],
-            ui_elements_description=before_element_list,
-            # additional_guidelines=self.additional_guidelines,
-        )
-        step_data['action_execution_prompt'] = action_execution_prompt
-
-        start_time = time.time()
-        action_output, is_safe, raw_response = self.llm.predict(
-            action_execution_prompt,
-        )
-
-        print(f'Action execution took: {time.time() - start_time:.2f} seconds')
-
-        action_detail_reason, action_detail = m3a_utils.parse_reason_action_output(action_output)
-        step_data['action_output'] = action_output
-
-        print('Action detail reason: ' + action_detail_reason)
-        print('Action detail: ' + action_detail)
         try:
             converted_action = json_action.JSONAction(
-                **agent_utils.extract_json(action_detail),
+                **agent_utils.extract_json(action),
             )
+            print('Converted action: ' + str(converted_action))
+
         except Exception as e:  # pylint: disable=broad-exception-caught
             print('Failed to convert the output to a valid action.')
             print(str(e))
@@ -692,8 +612,8 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         summary_prompt = _summarize_prompt(
             goal,
-            action_detail,
-            action_detail_reason,
+            action,
+            reason,
             before_element_list,
             after_element_list,
         )
@@ -727,7 +647,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         step_data['summary_prompt'] = summary_prompt
         step_data['summary'] = (
-            f'Action selected: {action_detail}. {summary_text}'
+            f'Action selected: {action}. {summary_text}'
             if raw_response
             else 'Error calling LLM in summerization phase.'
         )
