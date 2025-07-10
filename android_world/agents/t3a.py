@@ -103,7 +103,6 @@ PROMPT_PREFIX_NO_FORMAT = (
     '- Click/tap on a UI element: action_type: click\n'
     '- Long press on a UI element: action_type: long_press\n'
     '- Type text into an editable text field: action_type: input_text\n'
-    '- Fill out a form by typing text into multiple editable text fields: action_type: fill_form\n'
     '- Press the Enter key: action_type: keyboard_enter\n'
     '- Navigate to the home screen: action_type: navigate_home\n'
     '- Navigate back: action_type: navigate_back\n'

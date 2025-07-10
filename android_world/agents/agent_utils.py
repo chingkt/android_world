@@ -23,28 +23,15 @@ from typing import Any
 def extract_json(s: str) -> dict[str, Any] | None:
   """Extracts JSON from string.
 
-  Tries conversion with ast and json modules. If special_fill_form is True,
-  will attempt to parse fill_form actions with nested lists more robustly.
+  Tries conversion with ast and json modules.
 
   Args:
-    s: A string with a JSON in it.
-    special_fill_form: If True, use a more robust parser for fill_form actions.
+    s: A string with a JSON in it. E.g., "{'hello': 'world'}" or from CoT:
+      "let's think step-by-step, ..., {'hello': 'world'}".
 
   Returns:
     JSON object.
   """
-  if '"action_type": "fill_form"' in s:
-    # Try to extract the JSON object using a greedy match for the outermost braces
-    first = s.find('{')
-    last = s.rfind('}')
-    if first != -1 and last != -1:
-      json_str = s[first:last+1]
-      try:
-        return json.loads(json_str)
-      except Exception as error:
-        print(f'Cannot extract fill_form JSON, error: {error}')
-        return None
-  # Default behavior
   pattern = r'\{.*?\}'
   match = re.search(pattern, s)
   if match:
@@ -52,6 +39,7 @@ def extract_json(s: str) -> dict[str, Any] | None:
       return ast.literal_eval(match.group())
     except (SyntaxError, ValueError) as error:
       try:
+        # Try conversion with json module.
         return json.loads(match.group())
       except (SyntaxError, ValueError) as error2:
         print(

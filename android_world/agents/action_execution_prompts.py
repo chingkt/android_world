@@ -2,7 +2,6 @@ from android_world.env.json_action import (
     CLICK,
     SCROLL,
     INPUT_TEXT,
-    FILL_FORM,
     NAVIGATE_HOME,
     NAVIGATE_BACK,
     KEYBOARD_ENTER,
@@ -70,30 +69,6 @@ PROMPT_INPUT_TEXT_ACTION = (
     'Example: {{"action_type": "input_text", "text": "hello", "index": 3}}'
 )
 
-PROMPT_FILL_FORM_ACTION = (
-    'You have selected the `fill_form` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
-    'Format: {{"action_type": "fill_form", "form": [\n'
-    '  {{"text": <text_input_1>, "index": <target_index_1>}},\n'
-    '  {{"text": <text_input_2>, "index": <target_index_2>}}\n'
-    ']}}\n'
-    'Guidelines:\n'
-    '- Do not click on a dropdown menu or a non-editable field.\n'
-    '- Each item in "form" must have "text" and "index".\n'
-    '- The agent should simulate a real user: for each field, first focus (click) the field (by index), then type the text, and finally press enter.\n'
-    '- Only use indices for visible and **editable** text fields.\n'
-    '- Do not add extra keys or fields.\n'
-    '- If multiple fields are similar, use the index that match the intended target in the UI list.\n'
-    '- The order of fields in the form should match the logical order of filling the form on the screen.\n'
-    'Common mistakes:\n'
-    '- Clicking the dropdown menu, which is not editable, instead of the input field.\n'
-    '- Omitting either "text" or the field location ("index").\n'
-    '- Using an index for an element that is not visible, not editable, or not a text field.\n'
-    '- Typing into a label, button, or static text instead of an input field.\n'
-    '- Adding unnecessary keys or fields to the JSON.\n'
-    '- Failing to update the index if the UI changes after a previous action.\n'
-    '- Using out-of-range indices that do not correspond to any UI element.\n'
-    'Example: {{"action_type": "fill_form", "form": [{{"text": "John", "index": 2}}, {{"text": "Doe", "index": 3}}]}}'
-)
 
 PROMPT_ANSWER_ACTION = (
     'You have selected the `answer` action. Your reason was: {action_select_reason} Now construct the JSON for this action.\n'
@@ -222,7 +197,6 @@ ACTION_KEY_TO_PROMPT = {
     CLICK: PROMPT_CLICK_ACTION,
     LONG_PRESS: PROMPT_LONG_PRESS_ACTION,
     INPUT_TEXT: PROMPT_INPUT_TEXT_ACTION,
-    FILL_FORM: PROMPT_FILL_FORM_ACTION,
     ANSWER: PROMPT_ANSWER_ACTION,
     STATUS: PROMPT_STATUS_ACTION,
     KEYBOARD_ENTER: PROMPT_KEYBOARD_ENTER_ACTION,
