@@ -527,7 +527,7 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         action_output, is_safe, raw_response = self.llm.predict(
             action_selection_prompt,
         )
-        print(f"Action selection took: {time.time() - start_time:.2f} seconds")
+        # print(f"Action selection took: {time.time() - start_time:.2f} seconds")
 
         if is_safe == False:  # pylint: disable=singleton-comparison
             #  is_safe could be None
@@ -590,7 +590,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             action_execution_prompt,
         )
 
-        print(f'Action execution took: {time.time() - start_time:.2f} seconds')
+        # print(f'Action execution took: {time.time() - start_time:.2f} seconds')
 
         action_detail_reason, action_detail = m3a_utils.parse_reason_action_output(action_output)
         step_data['action_output'] = action_output
@@ -701,15 +701,15 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         summary, is_safe, raw_response = self.llm.predict(
             summary_prompt,
         )
-        print(f'Summarization took: {time.time() - start_time:.2f} seconds')
+        # print(f'Summarization took: {time.time() - start_time:.2f} seconds')
 
         import json
         json_part = '\n'.join(summary.splitlines()[1:])
 
-        # 2. 去除结尾的 ```
+        # 1. remove the first line which is the summary header
         json_clean = json_part.strip('`').strip()
 
-        # 3. 解析 JSON
+        # 2. convert the cleaned string to a JSON object
         summary_dict = json.loads(json_clean)
 
 
