@@ -6,14 +6,14 @@ from android_world.agents import m3a_utils
 from android_world.agents import infer
 
 
-LOG_FILE_PATH = r'E:\Desktop\android_world\tmp\ui_log.txt'  # 可以改成你想要的路径
+LOG_FILE_PATH = r'E:\Desktop\android_world\tmp\ui_log.txt'  # replace with your desired log file path
 
-# 初始化：每次运行先清空文件（只运行一次即可）
+# initialize log file
 def init_log_file():
     with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
-        f.write('')  # 清空内容
+        f.write('')  # clear the file content if it exists
 
-# 包装函数：像 print 一样使用
+# Function to log messages to a file
 def log_to_file(*args, sep=' ', end='\n'):
     message = sep.join(str(arg) for arg in args) + end
     with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
@@ -43,7 +43,7 @@ class UI_Elem_Description_Generator:
             combined = f"{label} {hint}".lower()
             class_type = elem.class_name.split('.')[-1] if elem.class_name else "unknown"
 
-            # 猜测可能的字段类型
+            # guess likely field based on common UI patterns
             likely_field = next(
                 (f for f in
                  ['name', 'phone', 'email', 'search', 'contact', 'amount', 'note', 'date', 'time']
@@ -51,7 +51,7 @@ class UI_Elem_Description_Generator:
                 ""
             )
 
-            # 坐标提取（可选）
+            # convert bounding box to a dictionary
             bbox = {
                 "x_min": elem.bbox_pixels.x_min,
                 "x_max": elem.bbox_pixels.x_max,
@@ -83,18 +83,6 @@ class UI_Elem_Description_Generator:
         return simplified_elements
 
     def generate_general_ui_prompt(self,ui_elements: list[dict], goal: str) -> str:
-        """
-        构建用于 LLM 分析 UI 屏幕结构的 prompt。
-
-        参数:
-            ui_elements: list[dict] - 简化后的 UI 元素列表。
-
-        返回:
-            str - 可直接发送给 LLM 的 prompt。
-        """
-        # prompt_header = """Given the following UI elements in JSON format, summarize in 1–2 sentences what this mobile screen likely shows and how it's structured.
-        #
-        # JSON:"""
 
         prompt_header = f"""
         The goal of the current UI task is {goal}.
@@ -125,7 +113,7 @@ class UI_Elem_Description_Generator:
     def filter_out_useless_ui_elements(self, ui_elements: list[representation_utils.UIElement]) -> \
             list[tuple[int, representation_utils.UIElement]]:
         def is_meaningful(e):
-            # 明确排除一些明显无意义的 class
+            # ignore elements that are not visible
             ignored_classes = {
                 'android.widget.ImageView',
                 'android.widget.FrameLayout',
@@ -133,15 +121,15 @@ class UI_Elem_Description_Generator:
                 'android.widget.ScrollView',
             }
 
-            # 如果 class 本身是容器/装饰/图标，且不可编辑，就跳过
+            # ignore elements that are not clickable, editable, or have no text/content_description
             if e.class_name in ignored_classes and not (e.is_clickable or e.is_editable):
                 return False
 
-            # 去掉通知栏（content_description 有 'notification'）
+            # ignore notification-related elements
             if e.content_description and 'notification' in e.content_description.lower():
                 return False
 
-            # 保留具备交互性或有语义文本的元素
+            # only consider elements that are visible and have some meaningful content
             return e.is_visible and (
                     e.is_clickable
                     or e.is_editable
@@ -200,14 +188,6 @@ class UI_Elem_Description_Generator:
         summary, _, _ = llm.predict(prompt)
         print("Summary generated for UI Elements: " + summary)
 
-        # # 生成可读的描述
-        # tree_info = UI_Elem_Description_Generator().convert_ui_elements_readable(
-        #     tree_info)
-
-        # tree_info = ''
-        # for original_index, ui_element in filtered_ui_elements:
-        #     tree_info += f'UI element {original_index}: {str(ui_element)}\n'
-        # log_to_file("UI elements:")
         result_str = f"""## UI Summary
         {summary.strip()}
 
@@ -215,7 +195,7 @@ class UI_Elem_Description_Generator:
         {json.dumps(tree_info, indent=2, ensure_ascii=False)}
         """
 
-        # 日志打印或写入文件
+        # logging the result
         log_to_file(result_str)
 
         return result_str
