@@ -165,8 +165,7 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
           '\n- Were any actions repeated without effect?'
           '\n- Did similar actions succeed or fail before?'
           '\n- Can you reuse or revise past successful strategies, or avoid known failure patterns?\n'
-        + '\nHere is a list of confirmed facts you have learned during interaction (your memory):\n{memory}'
-        + '\n\nPlease reflect on the above history and memory. Try to summarize what you’ve already tried, what has worked, and what hasn’t. Use that to inform your next action.'
+        + '\n\nPlease reflect on the above history. Try to summarize what you’ve already tried, what has worked, and what hasn’t. Use that to inform your next action.'
           ' screen:\n{ui_elements_description}\n'
         + GUIDANCE
         + '{additional_guidelines}'
@@ -334,7 +333,6 @@ def _generate_ui_elements_description_list_full(
 def _action_selection_prompt(
         goal: str,
         history: list[str],
-        memory: list[str],
         ui_elements_description: str,
         additional_guidelines: list[str] | None = None,
 ) -> str:
@@ -354,11 +352,6 @@ def _action_selection_prompt(
     else:
         history = 'You just started, no action has been performed yet.'
 
-    if memory:
-        memory = '\n'.join(memory)
-    else:
-        memory = 'You have no memory yet.'
-
     extra_guidelines = ''
     if additional_guidelines:
         extra_guidelines = 'For The Current Task:\n'
@@ -367,7 +360,6 @@ def _action_selection_prompt(
 
     return ACTION_SELECTION_PROMPT_TEMPLATE.format(
         history=history,
-        memory=memory,
         goal=goal,
         ui_elements_description=ui_elements_description
         if ui_elements_description
@@ -395,7 +387,7 @@ def _summarize_prompt(
     Returns:
       The text prompt for summarization that will be sent to gpt4v.
     """
-    return SUMMARIZATION_PROMPT_TEMPLATE_NEW.format(
+    return SUMMARIZATION_PROMPT_TEMPLATE.format(
         goal=goal,
         action=action,
         reason=reason,
@@ -462,11 +454,6 @@ class T3A(base_agent.EnvironmentInteractingAgent):
         step_data['before_screenshot'] = state.pixels.copy()
         step_data['before_element_list'] = ui_elements
 
-        memory_list = [
-            step_info['memory']
-            for step_info in self.history if "memory" in step_info and step_info['memory'] != "None"
-        ]
-        print("Total memory: ", memory_list)
 
         action_prompt = _action_selection_prompt(
             goal,
@@ -474,7 +461,6 @@ class T3A(base_agent.EnvironmentInteractingAgent):
                 'Step ' + str(i + 1) + ': ' + step_info['summary']
                 for i, step_info in enumerate(self.history)
             ],
-            memory_list,
             before_element_list,
             self.additional_guidelines,
         )
@@ -623,27 +609,9 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         )
         print(f'Summarization took: {time.time() - start_time:.2f} seconds')
 
-        import json
-        json_part = '\n'.join(summary.splitlines()[1:])
-
-        # 2. 去除结尾的 ```
-        json_clean = json_part.strip('`').strip()
-
-        # 3. 解析 JSON
-        summary_dict = json.loads(json_clean)
-
-
         if is_safe == False:  # pylint: disable=singleton-comparison
             #  is_safe could be None
             summary = """Summary triggered LLM safety classifier."""
-        else:
-            new_learning = summary_dict.get('new_knowledge', 'None')
-            del summary_dict['new_knowledge']
-            summary_text = json.dumps(summary_dict, indent=2, ensure_ascii=False)
-            step_data['memory'] = new_learning
-            print('Summary: ' + summary_text)
-            print('Knowledge learned: ' + new_learning)
-            pass
 
         step_data['summary_prompt'] = summary_prompt
         step_data['summary'] = (
@@ -651,7 +619,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             if raw_response
             else 'Error calling LLM in summerization phase.'
         )
-
+        print('Summary: ' + summary)
         step_data['summary_raw_response'] = raw_response
 
         self.history.append(step_data)
