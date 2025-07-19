@@ -615,7 +615,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         step_data['summary_prompt'] = summary_prompt
         step_data['summary'] = (
-            f'Action selected: {action}. {summary_text}'
+            f'Action selected: {action}. {summary}'
             if raw_response
             else 'Error calling LLM in summerization phase.'
         )
