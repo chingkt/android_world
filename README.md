@@ -15,7 +15,7 @@ We introduced 4 modules in the final report: Input Space Filtering, Enhaned UI S
 
 1. Input Space Filtering and UI Summary Generation:
 `android_world/utils/ui_elem_description_generator.py`: This file contains the code for 
-generating UI element descriptions, which is used in the input space filtering module.
+generating UI element descriptions and UI summary, which is used in the input space filtering module.
 
 2. Two-Stage Action Selection:
 `android_world/agents/action_execution_prompts.py`: This file contains action execution prompts, which is used in the two-stage action selection module.
