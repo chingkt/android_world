@@ -1,7 +1,8 @@
 # Practical Course GUI Agents
 
 ## Installation and dependency setup and Running the main system or experiments
-Please following the official README from AndroidWorld, which is also available in this README in the `AndroidWorld` section below.
+Please following the official `README` from AndroidWorld, which is also available in this `README` in the `AndroidWorld` section below.
+Note: rename `.env.example` to `.env` and fill in the `GCP_API_KEY` if you use GCP Gemini API.
 
 ## Steps to reproduce the reported results
 the main branch contains our full agent, while other branches with the naming convention `agent-without-<feature>` contain the agents used in ablation studies.
@@ -22,6 +23,11 @@ generating UI element descriptions and UI summary, which is used in the input sp
 
 3. Memory-Augmented Reasoning:
 `android_world/agents/t3a.py`: This file contains the original summary prompts. We adjusted the prompts to include detailed memory and learned knowledge, which is used in the memory-augmented reasoning module.
+
+## Benchmark related files
+1. under the `/benchmark` directory, you can find the logs for each agent run, including logs in each step in every tasks, and the task completion results.
+
+2. you can find the generated visualizations in the `/visualization` directory, and the python code used in `plot.py`
 
 # AndroidWorld
 
