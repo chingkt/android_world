@@ -1,3 +1,28 @@
+# Practical Course GUI Agents
+
+## Installation and dependency setup and Running the main system or experiments
+Please following the official README from AndroidWorld, which is also available in this README in the `AndroidWorld` section below.
+
+## Steps to reproduce the reported results
+the main branch contains our full agent, while other branches with the naming convention `agent-without-<feature>` contain the agents used in ablation studies.
+
+To reproduce the results, first switch to the branch corresponding to the agent you want to run, make sure you have the correct dependencies installed according to the below guide, and then update the `run_benchmark.py` script with the appropriate flags (e.g. `--n_task_combinations`, `--agent_name`, etc.), and run it. The output will be saved in the path specified in the `tee` command in the script.
+
+Note: the agents were tested only with `--agent_name=t3a_gemini_gcp`. If you want to run them with other llm, you may need to adjust the agent code to work with the specific LLM API you are using.
+
+## Code Documentation
+We introduced 4 modules in the final report: Input Space Filtering, Enhaned UI Summary Generation, Two-Stage Action Selection, and Memory-Augmented Reasoning. The major code for t3a life cycle is located in the `android_world/agents/t3a.py` file, which is the main agent class that orchestrates the entire process. The following files are used in the modules we introduced:
+
+1. Input Space Filtering and UI Summary Generation:
+`android_world/utils/ui_elem_description_generator.py`: This file contains the code for 
+generating UI element descriptions, which is used in the input space filtering module.
+
+2. Two-Stage Action Selection:
+`android_world/agents/action_execution_prompts.py`: This file contains action execution prompts, which is used in the two-stage action selection module.
+
+3. Memory-Augmented Reasoning:
+`android_world/agents/t3a.py`: This file contains the original summary prompts. We adjusted the prompts to include detailed memory and learned knowledge, which is used in the memory-augmented reasoning module.
+
 # AndroidWorld
 
 [![Unittests](https://github.com/google-research/android_world/actions/workflows/pytest.yml/badge.svg)](https://github.com/google-research/android_world/actions/workflows/pytest.yml)
