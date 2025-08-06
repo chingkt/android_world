@@ -28,7 +28,6 @@ def extract_json(s: str) -> dict[str, Any] | None:
 
   Args:
     s: A string with a JSON in it.
-    special_fill_form: If True, use a more robust parser for fill_form actions.
 
   Returns:
     JSON object.
