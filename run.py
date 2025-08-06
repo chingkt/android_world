@@ -50,6 +50,7 @@ def _find_adb_directory() -> str:
   potential_paths = [
       os.path.expanduser('~/Library/Android/sdk/platform-tools/adb'),
       os.path.expanduser('~/Android/Sdk/platform-tools/adb'),
+      '/usr/lib/android-sdk/platform-tools/adb',
   ]
   for path in potential_paths:
     if os.path.isfile(path):
@@ -164,11 +165,11 @@ def _get_agent(
   # Gemini.
   elif _AGENT_NAME.value == 'm3a_gemini_gcp':
     agent = m3a.M3A(
-        env, infer.GeminiGcpWrapper(model_name='gemini-1.5-pro-latest')
+        env, infer.GeminiGcpWrapper(model_name='gemini-1.5-flash')
     )
   elif _AGENT_NAME.value == 't3a_gemini_gcp':
     agent = t3a.T3A(
-        env, infer.GeminiGcpWrapper(model_name='gemini-2.0-flash')
+        env, infer.GeminiGcpWrapper(model_name='gemini-1.5-pro-latest')
     )
   # GPT.
   elif _AGENT_NAME.value == 't3a_gpt4':
