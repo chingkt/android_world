@@ -7,7 +7,7 @@ Note: rename `.env.example` to `.env` and fill in the `GCP_API_KEY` if you use G
 ## Steps to reproduce the reported results
 the main branch contains our full agent, while other branches with the naming convention `agent-without-<feature>` contain the agents used in ablation studies.
 
-To reproduce the results, first switch to the branch corresponding to the agent you want to run, make sure you have the correct dependencies installed according to the below guide, and then update the `run_benchmark.py` script with the appropriate flags (e.g. `--n_task_combinations`, `--agent_name`, etc.), and run it. The output will be saved in the path specified in the `tee` command in the script.
+To reproduce the results, first switch to the branch corresponding to the agent you want to run, make sure you have the correct dependencies installed according to the below guide, and then update the `run_benchmark.sh` script with the appropriate flags (e.g. `--n_task_combinations`, `--agent_name`, etc.), and run it. The output will be saved in the path specified in the `tee` command in the script.
 
 Note: the agents were tested only with `--agent_name=t3a_gemini_gcp`. If you want to run them with other llm, you may need to adjust the agent code to work with the specific LLM API you are using.
 
